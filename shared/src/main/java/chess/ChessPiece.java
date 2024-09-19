@@ -2,6 +2,7 @@ package chess;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Objects;
 
 /**
  * Represents a single chess piece
@@ -47,6 +48,27 @@ public class ChessPiece {
         return this.type;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ChessPiece that = (ChessPiece) o;
+        return pieceColor == that.pieceColor && type == that.type;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(pieceColor, type);
+    }
+
+    @Override
+    public String toString() {
+        return "ChessPiece{" +
+                "pieceColor=" + pieceColor +
+                ", type=" + type +
+                '}';
+    }
+
     /**
      * Calculates all the positions a chess piece can move to
      * Does not take into account moves that are illegal due to leaving the king in
@@ -54,14 +76,42 @@ public class ChessPiece {
      *
      * @return Collection of valid moves
      */
+
     private Collection<ChessMove> B_move_calculator(ChessBoard board, ChessPosition position){
-        ArrayList<ChessMove> Moves = new ArrayList<>();
-//        Moves.add(new ChessMove({3,3}, {4,3}));
+        Collection<ChessMove> Moves = new ArrayList<>();
+        int row = position.getRow();
+        int col = position.getColumn();
+        int temp_row = row;
+        int temp_col = col;
+//        while (temp_col<=8 && temp_row>0 && temp_col>0 && temp_row<=8){
+//
+//        }
+
+        Moves.add(new ChessMove(new ChessPosition(5,4), new ChessPosition(7,2), null));
         return Moves;
     }
+
+    private Collection<ChessMove> K_move_calculator(ChessBoard board, ChessPosition position){
+        Collection<ChessMove> Moves = new ArrayList<>();
+        int row = position.getRow();
+        int col = position.getColumn();
+        Moves.add(new ChessMove(new ChessPosition(row,col), new ChessPosition(row+1,col+2), null));
+        Moves.add(new ChessMove(new ChessPosition(row,col), new ChessPosition(row+1,col-2), null));
+        Moves.add(new ChessMove(new ChessPosition(row,col), new ChessPosition(row-1,col+2), null));
+        Moves.add(new ChessMove(new ChessPosition(row,col), new ChessPosition(row-1,col-2), null));
+        Moves.add(new ChessMove(new ChessPosition(row,col), new ChessPosition(row+2,col+1), null));
+        Moves.add(new ChessMove(new ChessPosition(row,col), new ChessPosition(row-2,col+1), null));
+        Moves.add(new ChessMove(new ChessPosition(row,col), new ChessPosition(row-2,col-1), null));
+        Moves.add(new ChessMove(new ChessPosition(row,col), new ChessPosition(row+2,col-1), null));
+        return Moves;
+    }
+
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         if (this.type == PieceType.BISHOP) {
             return B_move_calculator(board, myPosition);
+        }
+        else if (this.type == PieceType.KNIGHT) {
+            return K_move_calculator(board, myPosition);
         }
         else return new ArrayList<>();
     }
