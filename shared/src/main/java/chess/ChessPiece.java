@@ -88,6 +88,15 @@ public class ChessPiece {
         else if (this.type == PieceType.KING) {
             return chess.move_calculator.moves_calculator.King_move_calculator(this, board, myPosition);
         }
+        else if (this.type == PieceType.QUEEN) {
+            return chess.move_calculator.moves_calculator.Queen_move_calculator(this, board, myPosition);
+        }
+        else if (this.type == PieceType.ROOK) {
+            return chess.move_calculator.moves_calculator.Rook_move_calculator(this, board, myPosition);
+        }
+        else if (this.type == PieceType.PAWN) {
+            return chess.move_calculator.moves_calculator.Pawn_move_calculator(this, board, myPosition);
+        }
         else return null;
     }
 }
