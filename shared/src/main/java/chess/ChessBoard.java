@@ -10,7 +10,7 @@ import java.util.Objects;
  * signature of the existing methods.
  */
 public class ChessBoard {
-    private ChessPiece[][] squares = new ChessPiece[9][9];
+    private ChessPiece[][] squares = new ChessPiece[8][8];
     public ChessBoard() {
         
     }
@@ -22,7 +22,12 @@ public class ChessBoard {
      * @param piece    the piece to add
      */
     public void addPiece(ChessPosition position, ChessPiece piece){
-        squares[position.getRow()][position.getColumn()] = piece;
+        if (position.getRow()-1 < 0 && position.getRow()-1 >= 8 && position.getColumn()-1 < 0 && position.getColumn()-1 >= 8) {
+            throw new ArrayIndexOutOfBoundsException("out of bounds");
+        }
+        else{
+            squares[position.getRow()-1][position.getColumn()-1] = piece;
+        }
     }
     /**
      * Gets a chess piece on the chessboard
@@ -32,7 +37,12 @@ public class ChessBoard {
      * position
      */
     public ChessPiece getPiece(ChessPosition position) {
-        return squares[position.getRow()][position.getColumn()];
+        if (position.getRow()-1 < 0 && position.getRow()-1 >= 8 && position.getColumn()-1 < 0 && position.getColumn()-1 >= 8) {
+            throw new ArrayIndexOutOfBoundsException("out of bounds");
+        }
+        else{
+            return squares[position.getRow()-1][position.getColumn()-1];
+        }
     }
 
     /**
