@@ -109,7 +109,8 @@ public class moves_calculator {
     }
 
     public static Collection<ChessMove> Queen_move_calculator(ChessPiece piece, ChessBoard board, ChessPosition position) {
-        Collection<ChessMove> Moves = new ArrayList<>();
+        Collection<ChessMove> Moves = Rook_move_calculator(piece, board, position);
+        Moves.addAll(Bishop_move_calculator(piece, board, position));
         return Moves;
     }
 
