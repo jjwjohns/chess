@@ -77,7 +77,7 @@ public class ChessPiece {
      * @return Collection of valid moves
      */
 
-    private Collection<ChessMove> B_move_calculator(ChessBoard board, ChessPosition position){
+    private Collection<ChessMove> Bishop_move_calculator(ChessBoard board, ChessPosition position){
         Collection<ChessMove> Moves = new ArrayList<>();
         int row = position.getRow();
         int col = position.getColumn();
@@ -91,29 +91,39 @@ public class ChessPiece {
         return Moves;
     }
 
-    private Collection<ChessMove> K_move_calculator(ChessBoard board, ChessPosition position){
+    private Collection<ChessMove> Knight_move_calculator(ChessBoard board, ChessPosition position){
         Collection<ChessMove> Moves = new ArrayList<>();
+        System.out.println("initialized");
         int row = position.getRow();
         int col = position.getColumn();
-        Moves.add(new ChessMove(new ChessPosition(row,col), new ChessPosition(row+1,col+2), null));
-        Moves.add(new ChessMove(new ChessPosition(row,col), new ChessPosition(row+1,col-2), null));
-        Moves.add(new ChessMove(new ChessPosition(row,col), new ChessPosition(row-1,col+2), null));
-        Moves.add(new ChessMove(new ChessPosition(row,col), new ChessPosition(row-1,col-2), null));
-        Moves.add(new ChessMove(new ChessPosition(row,col), new ChessPosition(row+2,col+1), null));
-        Moves.add(new ChessMove(new ChessPosition(row,col), new ChessPosition(row-2,col+1), null));
-        Moves.add(new ChessMove(new ChessPosition(row,col), new ChessPosition(row-2,col-1), null));
-        Moves.add(new ChessMove(new ChessPosition(row,col), new ChessPosition(row+2,col-1), null));
+        System.out.println("got row and column" + row + "," + col);
+
+        int[][] possible_moves = {{1,2},{1,-2},{-1,2},{-1,-2},{2,1},{-2,1},{-2,-1},{2,-1}};
+        System.out.println("got possible moves");
+        for (int[] move : possible_moves) {
+            int newR = row + move[0];
+            int newC = col + move[1];
+            System.out.println("assigned new row and column");
+
+            if (newR <= 8 && newC <= 8 && newR >= 1 && newC >= 1) {
+                Moves.add(new ChessMove(new ChessPosition(row, col), new ChessPosition(newR, newC), null));
+                System.out.println("added valid move" + newR + "," + newC);
+            }
+        }
+        System.out.println("Returned Moves");
         return Moves;
     }
 
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
+        System.out.println("first function");
         if (this.type == PieceType.BISHOP) {
-            return B_move_calculator(board, myPosition);
+            return Bishop_move_calculator(board, myPosition);
         }
         else if (this.type == PieceType.KNIGHT) {
-            return K_move_calculator(board, myPosition);
+            System.out.println("entering function");
+            return Knight_move_calculator(board, myPosition);
         }
-        else return new ArrayList<>();
+        else return null;
     }
 }
 
