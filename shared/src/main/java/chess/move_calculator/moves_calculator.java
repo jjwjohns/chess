@@ -81,6 +81,7 @@ public class moves_calculator {
         int row = position.getRow();
         int col = position.getColumn();
 
+//        Checking for basic one forward move
         if (row >=1 && row <=8 && col>=1 && col+1<=8){
             if(piece.getTeamColor() == WHITE){
                 ChessPosition newPosition = new ChessPosition(row+1, col);
@@ -95,6 +96,7 @@ public class moves_calculator {
                 }
             }
         }
+//        checking for starting double move
         ChessPosition newPosition = new ChessPosition(row+1, col);
         ChessPosition new2Position = new ChessPosition(row+2, col);
         if (row == 2 && piece.getTeamColor() == WHITE && board.getPiece(newPosition) == null && board.getPiece(new2Position) == null){
@@ -106,8 +108,33 @@ public class moves_calculator {
             Moves.add(new ChessMove(new ChessPosition(row, col), new ChessPosition(row-2, col), null));
         }
 
+//        checking for White capture
+        newPosition = new ChessPosition(row+1, col+1);
+        if (board.getPiece(newPosition) != null) {
+            if (piece.getTeamColor() == WHITE && row + 1 <=8 && col+1<=8 && board.getPiece(newPosition).getTeamColor() == BLACK) {
+                Moves.add(new ChessMove(new ChessPosition(row, col), new ChessPosition(row+1, col+1), null));
+            }
+        }
+        newPosition = new ChessPosition(row+1, col-1);
+        if (board.getPiece(newPosition) != null) {
+            if (piece.getTeamColor() == WHITE && row + 1 <=8 && col-1>=1 && board.getPiece(newPosition).getTeamColor() == BLACK) {
+                Moves.add(new ChessMove(new ChessPosition(row, col), new ChessPosition(row+1, col-1), null));
+            }
+        }
 
-
+//        checking for Black capture
+        newPosition = new ChessPosition(row-1, col+1);
+        if (board.getPiece(newPosition) != null) {
+            if (piece.getTeamColor() == BLACK && row - 1 >=1 && col+1<=8 && board.getPiece(newPosition).getTeamColor() == WHITE) {
+                Moves.add(new ChessMove(new ChessPosition(row, col), new ChessPosition(row-1, col+1), null));
+            }
+        }
+        newPosition = new ChessPosition(row-1, col-1);
+        if (board.getPiece(newPosition) != null) {
+            if (piece.getTeamColor() == BLACK && row - 1 >= 1 && col-1>=1 && board.getPiece(newPosition).getTeamColor() == WHITE) {
+                Moves.add(new ChessMove(new ChessPosition(row, col), new ChessPosition(row-1, col-1), null));
+            }
+        }
 
         return Moves;
     }
