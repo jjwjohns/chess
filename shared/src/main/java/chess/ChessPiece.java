@@ -81,13 +81,26 @@ public class ChessPiece {
         Collection<ChessMove> Moves = new ArrayList<>();
         int row = position.getRow();
         int col = position.getColumn();
-        int temp_row = row;
-        int temp_col = col;
-//        while (temp_col<=8 && temp_row>0 && temp_col>0 && temp_row<=8){
-//
-//        }
 
-        Moves.add(new ChessMove(new ChessPosition(5,4), new ChessPosition(7,2), null));
+        int[][] possible_directions = {{1,1},{1,-1},{-1,1},{-1,-1}};
+
+        for (int[] direction : possible_directions) {
+            if (row + direction[0] >=1 && row+direction[0] <=8 && col+direction[1] >=1 && col+direction[1] <=8){
+                for (int newR = row + direction[0], newC = col+direction[1]; newR <= 8 && newC <= 8 && newR >= 1 && newC >= 1; newR += direction[0], newC += direction[1]) {
+                    ChessPosition newPosition = new ChessPosition(newR, newC);
+                    if (board.getPiece(newPosition) == null){
+                        Moves.add(new ChessMove(new ChessPosition(row, col), new ChessPosition(newR, newC), null));
+                    }
+                    else if (board.getPiece(newPosition).getTeamColor() != this.pieceColor){
+                        Moves.add(new ChessMove(new ChessPosition(row, col), new ChessPosition(newR, newC), null));
+                        break;
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
+        }
         return Moves;
     }
 
