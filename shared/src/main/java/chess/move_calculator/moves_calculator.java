@@ -1,12 +1,12 @@
 package chess.move_calculator;
 
-import chess.ChessBoard;
-import chess.ChessMove;
-import chess.ChessPosition;
-import chess.ChessPiece;
+import chess.*;
 
 import java.util.ArrayList;
 import java.util.Collection;
+
+import static chess.ChessGame.TeamColor.BLACK;
+import static chess.ChessGame.TeamColor.WHITE;
 
 public class moves_calculator {
 
@@ -78,6 +78,37 @@ public class moves_calculator {
 
     public static Collection<ChessMove> Pawn_move_calculator(ChessPiece piece, ChessBoard board, ChessPosition position) {
         Collection<ChessMove> Moves = new ArrayList<>();
+        int row = position.getRow();
+        int col = position.getColumn();
+
+        if (row >=1 && row <=8 && col>=1 && col+1<=8){
+            if(piece.getTeamColor() == WHITE){
+                ChessPosition newPosition = new ChessPosition(row+1, col);
+                if (board.getPiece(newPosition) == null){
+                    Moves.add(new ChessMove(new ChessPosition(row, col), new ChessPosition(row+1, col), null));
+                }
+            }
+            if(piece.getTeamColor() == BLACK){
+                ChessPosition newPosition = new ChessPosition(row-1, col);
+                if (board.getPiece(newPosition) == null){
+                    Moves.add(new ChessMove(new ChessPosition(row, col), new ChessPosition(row-1, col), null));
+                }
+            }
+        }
+        ChessPosition newPosition = new ChessPosition(row+1, col);
+        ChessPosition new2Position = new ChessPosition(row+2, col);
+        if (row == 2 && piece.getTeamColor() == WHITE && board.getPiece(newPosition) == null && board.getPiece(new2Position) == null){
+            Moves.add(new ChessMove(new ChessPosition(row, col), new ChessPosition(row+2, col), null));
+        }
+        newPosition = new ChessPosition(row-1, col);
+        new2Position = new ChessPosition(row-2, col);
+        if (row == 7 && piece.getTeamColor() == BLACK && board.getPiece(newPosition) == null && board.getPiece(new2Position) == null){
+            Moves.add(new ChessMove(new ChessPosition(row, col), new ChessPosition(row-2, col), null));
+        }
+
+
+
+
         return Moves;
     }
 
