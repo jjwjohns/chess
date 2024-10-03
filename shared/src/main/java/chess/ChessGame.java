@@ -86,7 +86,7 @@ public class ChessGame {
         try{
             ChessPiece piece = board.getPiece(move.getStartPosition());
             if (piece.getTeamColor() != turn){
-                throw new InvalidMoveException("This move is invalid");
+                throw new InvalidMoveException("Wrong team's move");
             }
             Collection<ChessMove> valid = validMoves(move.getStartPosition());
             if (valid.contains(move)){
@@ -108,8 +108,12 @@ public class ChessGame {
                 }
             }
 
+            else {
+                throw new InvalidMoveException("This move is invalid");
+            }
+
         }catch (Exception e){
-            throw new InvalidMoveException("This move is invalid");
+            throw new InvalidMoveException("general exception");
         }
 
     }
