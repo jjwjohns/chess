@@ -42,19 +42,27 @@ public class ChessGame {
         BLACK
     }
 
-    /**
-     * Gets a valid moves for a piece at the given location
-     *
-     * @param startPosition the piece to get valid moves for
-     * @return Set of valid moves for requested piece, or null if no piece at
-     * startPosition
-     */
+//    /**
+//     * Gets a valid moves for a piece at the given location
+//     *
+//     * @param startPosition the piece to get valid moves for
+//     * @return Set of valid moves for requested piece, or null if no piece at
+//     * startPosition
+//     */
+
+    private Collection <ChessMove> board_check(ChessBoard board, Collection<ChessMove> moves){
+        for (ChessMove move : moves){
+
+        }
+        return moves;
+    }
+
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
-        Collection<ChessMove> moves = new ArrayList<>();
+        Collection<ChessMove> moves;
         ChessPiece piece = board.getPiece(startPosition);
         moves = piece.pieceMoves(board, startPosition);
 
-        return moves;
+        return board_check(board, moves);
     }
 
     /**
@@ -76,6 +84,21 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
+        for (int i = 0; i < 8; i++){
+            for (int j = 0; j < 8; j++){
+                if (board.getPiece(new ChessPosition(i,j)) != null){
+                    ChessPiece piece = board.getPiece(new ChessPosition(i,j));
+                    if (piece.getTeamColor() != teamColor){
+                        Collection<ChessMove> moves = piece.pieceMoves(board, new ChessPosition(i,j));
+                        for (ChessMove move: moves){
+                            if (board.getPiece(move.getEndPosition()).getPieceType() == ChessPiece.PieceType.KING && board.getPiece(move.getEndPosition()).getTeamColor() != teamColor){
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
         return false;
     }
 
@@ -86,7 +109,12 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        return true;
+        for (int i = 0; i < 8; i++) {
+            for (int j = 0; j < 8; j++) {
+                
+            }
+        }
+        return false;
     }
 
     /**
