@@ -1,5 +1,7 @@
 package chess;
 
+import jdk.jshell.Snippet;
+
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -12,8 +14,6 @@ import java.util.Collection;
 public class ChessGame {
     private TeamColor turn;
     private ChessBoard board;
-    private ChessPiece[] whites;
-    private ChessPiece[] blacks;
 
     public ChessGame() {
     }
@@ -144,21 +144,23 @@ public class ChessGame {
         for (int i = 1; i <= 8; i++) {
             for (int j = 1; j <= 8; j++) {
                 if (board.getPiece((new ChessPosition(i,j))) != null) {
-                    ChessPiece King = board.getPiece(new ChessPosition(i, j));
-                    Collection<ChessMove> moves = King.pieceMoves(board, new ChessPosition(i, j));
-                    for (ChessMove move : moves) {
-                        ChessPosition end = move.getEndPosition();
-                        ChessPiece target = board.getPiece(end);
+                    if (board.getPiece(new ChessPosition(i,j)).getPieceType() == ChessPiece.PieceType.KING && board.getPiece(new ChessPosition(i,j)).getTeamColor() == teamColor){
+                        ChessPiece King = board.getPiece(new ChessPosition(i, j));
+                        Collection<ChessMove> moves = King.pieceMoves(board, new ChessPosition(i, j));
+                        for (ChessMove move : moves) {
+                            ChessPosition end = move.getEndPosition();
+                            ChessPiece target = board.getPiece(end);
 
-                        board.addPiece(end, King);
-                        board.addPiece(move.getStartPosition(), null);
-                        if (!isInCheck(teamColor)) {
+                            board.addPiece(end, King);
+                            board.addPiece(move.getStartPosition(), null);
+                            if (!isInCheck(teamColor)) {
+                                board.addPiece(move.getEndPosition(), target);
+                                board.addPiece(move.getStartPosition(), King);
+                                return false;
+                            }
                             board.addPiece(move.getEndPosition(), target);
                             board.addPiece(move.getStartPosition(), King);
-                            return false;
                         }
-                        board.addPiece(move.getEndPosition(), target);
-                        board.addPiece(move.getStartPosition(), King);
                     }
                 }
             }
