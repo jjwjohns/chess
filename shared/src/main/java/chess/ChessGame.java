@@ -86,6 +86,9 @@ public class ChessGame {
             board.addPiece(move.getEndPosition(), piece);
             board.addPiece(move.getStartPosition(), null);
         }
+        else {
+            throw new InvalidMoveException("This move is invalid");
+        }
     }
 
     /**
