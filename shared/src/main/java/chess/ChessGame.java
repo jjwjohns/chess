@@ -12,6 +12,9 @@ import java.util.Collection;
 public class ChessGame {
     private TeamColor turn;
     private ChessBoard board;
+    private ChessPiece[] whites;
+    private ChessPiece[] blacks;
+
     public ChessGame() {
     }
 
@@ -61,7 +64,9 @@ public class ChessGame {
      * @throws InvalidMoveException if move is invalid
      */
     public void makeMove(ChessMove move) throws InvalidMoveException {
-        throw new RuntimeException("Not implemented");
+        ChessPiece piece = board.getPiece(move.getStartPosition());
+        board.addPiece(move.getEndPosition(), piece);
+        board.addPiece(move.getStartPosition(), null);
     }
 
     /**
@@ -71,7 +76,7 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        return true;
+        return false;
     }
 
     /**
@@ -92,7 +97,11 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        return true;
+//        if (isInCheck(teamColor) && validMoves(king).isEmpty()){
+//            return true;
+//        }
+//        else {return false;}
+        return false;
     }
 
     /**
