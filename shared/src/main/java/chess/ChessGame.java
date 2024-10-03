@@ -176,8 +176,52 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
+        for (int i = 1; i <= 8; i++) {
+            for (int j = 1; j <= 8; j++) {
+                if (board.getPiece((new ChessPosition(i,j))) != null) {
+//                    Handles the king that may be in stalemate
+                    if (board.getPiece(new ChessPosition(i,j)).getPieceType() == ChessPiece.PieceType.KING && board.getPiece(new ChessPosition(i,j)).getTeamColor() == teamColor){
+                        ChessPiece King = board.getPiece(new ChessPosition(i, j));
+                        Collection<ChessMove> moves = King.pieceMoves(board, new ChessPosition(i, j));
+                        for (ChessMove move : moves) {
+                            ChessPosition end = move.getEndPosition();
+                            ChessPiece target = board.getPiece(end);
 
-        return false;
+                            board.addPiece(end, King);
+                            board.addPiece(move.getStartPosition(), null);
+                            if (!isInCheck(teamColor)) {
+                                board.addPiece(move.getEndPosition(), target);
+                                board.addPiece(move.getStartPosition(), King);
+                                return false;
+                            }
+                            board.addPiece(move.getEndPosition(), target);
+                            board.addPiece(move.getStartPosition(), King);
+                        }
+                    }
+
+                    if (board.getPiece(new ChessPosition(i,j)).getTeamColor() == teamColor){
+                        ChessPiece piece = board.getPiece(new ChessPosition(i, j));
+                        Collection<ChessMove> moves = piece.pieceMoves(board, new ChessPosition(i, j));
+                        for (ChessMove move : moves) {
+                            ChessPosition start = move.getStartPosition();
+                            ChessPosition end = move.getEndPosition();
+                            ChessPiece target = board.getPiece(end);
+
+                            board.addPiece(end, piece);
+                            board.addPiece(start, null);
+                            if (!isInCheck(teamColor)) {
+                                board.addPiece(end, target);
+                                board.addPiece(start, piece);
+                                return false;
+                            }
+                            board.addPiece(move.getEndPosition(), target);
+                            board.addPiece(move.getStartPosition(), piece);
+                        }
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     /**
