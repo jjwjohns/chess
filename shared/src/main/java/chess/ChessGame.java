@@ -54,9 +54,6 @@ public class ChessGame {
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         Collection<ChessMove> moves;
         ChessPiece piece = board.getPiece(startPosition);
-        if (turn != piece.getTeamColor()){
-            return null;
-        }
         moves = piece.pieceMoves(board, startPosition);
         Collection<ChessMove> valid = new ArrayList<>();
 
@@ -86,6 +83,9 @@ public class ChessGame {
 
         try{
             ChessPiece piece = board.getPiece(move.getStartPosition());
+            if (turn != piece.getTeamColor()){
+                throw new InvalidMoveException("This move is invalid");
+            }
             Collection<ChessMove> valid = validMoves(move.getStartPosition());
             if (valid.contains(move)){
                 board.addPiece(move.getEndPosition(), piece);
@@ -143,15 +143,16 @@ public class ChessGame {
         }
         for (int i = 1; i <= 8; i++) {
             for (int j = 1; j <= 8; j++) {
-                if (board.getPiece(new ChessPosition(i, j)).getPieceType() == ChessPiece.PieceType.KING && board.getPiece(new ChessPosition(i, j)).getTeamColor() == teamColor) {
+                if (board.getPiece((new ChessPosition(i,j))) != null) {
                     ChessPiece King = board.getPiece(new ChessPosition(i, j));
-                    Collection<ChessMove> moves = King.pieceMoves(board, new ChessPosition(i,j));
-                    for (ChessMove move : moves){
+                    Collection<ChessMove> moves = King.pieceMoves(board, new ChessPosition(i, j));
+                    for (ChessMove move : moves) {
                         ChessPosition end = move.getEndPosition();
                         ChessPiece target = board.getPiece(end);
+
                         board.addPiece(end, King);
                         board.addPiece(move.getStartPosition(), null);
-                        if (!isInCheck(teamColor)){
+                        if (!isInCheck(teamColor)) {
                             board.addPiece(move.getEndPosition(), target);
                             board.addPiece(move.getStartPosition(), King);
                             return false;
