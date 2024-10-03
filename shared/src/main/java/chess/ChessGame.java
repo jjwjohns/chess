@@ -88,8 +88,16 @@ public class ChessGame {
             }
             Collection<ChessMove> valid = validMoves(move.getStartPosition());
             if (valid.contains(move)){
-                board.addPiece(move.getEndPosition(), piece);
-                board.addPiece(move.getStartPosition(), null);
+//                pawns
+                if (board.getPiece(move.getStartPosition()).getPieceType() == ChessPiece.PieceType.PAWN && move.getPromotionPiece() != null){
+                    ChessPiece promotion = new ChessPiece(piece.getTeamColor(), move.getPromotionPiece());
+                    board.addPiece(move.getEndPosition(), promotion);
+                    board.addPiece(move.getStartPosition(), null);
+                }
+                else {
+                    board.addPiece(move.getEndPosition(), piece);
+                    board.addPiece(move.getStartPosition(), null);
+                }
                 if (piece.getTeamColor() == TeamColor.WHITE){
                     setTeamTurn(TeamColor.BLACK);
                 }
