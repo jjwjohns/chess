@@ -11,6 +11,7 @@ import java.util.Collection;
  */
 public class ChessGame {
     private TeamColor turn;
+    private ChessBoard board;
     public ChessGame() {
     }
 
@@ -18,7 +19,7 @@ public class ChessGame {
      * @return Which team's turn it is
      */
     public TeamColor getTeamTurn() {
-        return TeamColor.WHITE;
+        return turn;
     }
 
     /**
@@ -27,7 +28,7 @@ public class ChessGame {
      * @param team the team whose turn it is
      */
     public void setTeamTurn(TeamColor team) {
-        turn = TeamColor.WHITE;
+        turn = team;
     }
 
     /**
@@ -47,6 +48,9 @@ public class ChessGame {
      */
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         Collection<ChessMove> moves = new ArrayList<>();
+        ChessPiece piece = board.getPiece(startPosition);
+        moves = piece.pieceMoves(board, startPosition);
+
         return moves;
     }
 
@@ -67,7 +71,7 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        return true;
     }
 
     /**
@@ -77,7 +81,7 @@ public class ChessGame {
      * @return True if the specified team is in checkmate
      */
     public boolean isInCheckmate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        return true;
     }
 
     /**
@@ -88,7 +92,7 @@ public class ChessGame {
      * @return True if the specified team is in stalemate, otherwise false
      */
     public boolean isInStalemate(TeamColor teamColor) {
-        throw new RuntimeException("Not implemented");
+        return true;
     }
 
     /**
@@ -97,7 +101,7 @@ public class ChessGame {
      * @param board the new board to use
      */
     public void setBoard(ChessBoard board) {
-        board.resetBoard();
+        this.board = board;
     }
 
     /**
@@ -106,6 +110,6 @@ public class ChessGame {
      * @return the chessboard
      */
     public ChessBoard getBoard() {
-        throw new RuntimeException("Not implemented");
+        return this.board;
     }
 }
