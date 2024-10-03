@@ -50,19 +50,27 @@ public class ChessGame {
 //     * startPosition
 //     */
 
-    private Collection <ChessMove> board_check(ChessBoard board, Collection<ChessMove> moves){
-        for (ChessMove move : moves){
-
-        }
-        return moves;
-    }
 
     public Collection<ChessMove> validMoves(ChessPosition startPosition) {
         Collection<ChessMove> moves;
         ChessPiece piece = board.getPiece(startPosition);
         moves = piece.pieceMoves(board, startPosition);
+        Collection<ChessMove> valid = new ArrayList<>();
 
-        return board_check(board, moves);
+        for (ChessMove move : moves){
+            ChessPosition end = move.getEndPosition();
+            ChessPiece target = board.getPiece(end);
+
+            board.addPiece(end, piece);
+            board.addPiece(move.getStartPosition(), null);
+            if (!isInCheck(piece.getTeamColor())){
+                valid.add(move);
+            }
+            board.addPiece(move.getEndPosition(), target);
+            board.addPiece(move.getStartPosition(), piece);
+        }
+
+        return valid;
     }
 
     /**
@@ -84,15 +92,17 @@ public class ChessGame {
      * @return True if the specified team is in check
      */
     public boolean isInCheck(TeamColor teamColor) {
-        for (int i = 0; i < 8; i++){
-            for (int j = 0; j < 8; j++){
+        for (int i = 1; i <= 8; i++){
+            for (int j = 1; j <= 8; j++){
                 if (board.getPiece(new ChessPosition(i,j)) != null){
                     ChessPiece piece = board.getPiece(new ChessPosition(i,j));
                     if (piece.getTeamColor() != teamColor){
                         Collection<ChessMove> moves = piece.pieceMoves(board, new ChessPosition(i,j));
                         for (ChessMove move: moves){
-                            if (board.getPiece(move.getEndPosition()).getPieceType() == ChessPiece.PieceType.KING && board.getPiece(move.getEndPosition()).getTeamColor() != teamColor){
-                                return true;
+                            if(board.getPiece(move.getEndPosition()) != null){
+                                if (board.getPiece(move.getEndPosition()).getPieceType() == ChessPiece.PieceType.KING && board.getPiece(move.getEndPosition()).getTeamColor() == teamColor){
+                                    return true;
+                                }
                             }
                         }
                     }
@@ -112,21 +122,23 @@ public class ChessGame {
         if (!isInCheck(teamColor)){
             return false;
         }
-        for (int i = 0; i < 8; i++) {
-            for (int j = 0; j < 8; j++) {
+        for (int i = 1; i <= 8; i++) {
+            for (int j = 1; j <= 8; j++) {
                 if (board.getPiece(new ChessPosition(i, j)).getPieceType() == ChessPiece.PieceType.KING && board.getPiece(new ChessPosition(i, j)).getTeamColor() == teamColor) {
                     ChessPiece King = board.getPiece(new ChessPosition(i, j));
                     Collection<ChessMove> moves = King.pieceMoves(board, new ChessPosition(i,j));
                     for (ChessMove move : moves){
-                        board.addPiece(move.getEndPosition(), King);
+                        ChessPosition end = move.getEndPosition();
+                        ChessPiece target = board.getPiece(end);
+                        board.addPiece(end, King);
+                        board.addPiece(move.getStartPosition(), null);
                         if (!isInCheck(teamColor)){
+                            board.addPiece(move.getEndPosition(), target);
                             board.addPiece(move.getStartPosition(), King);
-                            board.addPiece(move.getEndPosition(), null);
                             return false;
                         }
+                        board.addPiece(move.getEndPosition(), target);
                         board.addPiece(move.getStartPosition(), King);
-                        board.addPiece(move.getEndPosition(), null);
-
                     }
                 }
             }
