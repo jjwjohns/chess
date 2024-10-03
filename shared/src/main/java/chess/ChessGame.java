@@ -12,10 +12,11 @@ import java.util.Collection;
  * signature of the existing methods.
  */
 public class ChessGame {
-    private TeamColor turn;
-    private ChessBoard board;
+    private TeamColor turn = TeamColor.WHITE;
+    private ChessBoard board = new ChessBoard();
 
     public ChessGame() {
+        board.resetBoard();
     }
 
     /**
