@@ -14,9 +14,6 @@ public class Server {
 
         Spark.staticFiles.location("web");
 
-        // Register your endpoints and handle exceptions here.
-
-        //This line initializes the server and can be removed once you have a functioning endpoint 
         Spark.post("/user", this::register);
         Spark.delete("/db", this::clear);
         Spark.post("/session", this::login);
@@ -35,34 +32,32 @@ public class Server {
     }
 
     private Object register(Request req, Response res) throws Exception {
-//        var user = new Gson().fromJson(req.body(), User.class);
-////        ChessService yes = new ChessService();
-//        ChessService.addUser();
-//        return new Gson().toJson(user);
-        throw new Exception("not implemented");
+        var user = new Gson().fromJson(req.body(), User.class);
+        ChessService.register(user);
+        throw new Exception("not implemented (server)");
     }
 
     private Object clear(Request req, Response res) throws Exception {
-        throw new Exception("not implemented");
+        throw new Exception("not implemented (server)");
     }
 
     private Object login(Request req, Response res) throws Exception {
-        throw new Exception("not implemented");
+        throw new Exception("not implemented (server)");
     }
 
     private Object logout(Request req, Response res) throws Exception {
-        throw new Exception("not implemented");
+        throw new Exception("not implemented (server)");
     }
 
     private Object listGames(Request req, Response res) throws Exception {
-        throw new Exception("not implemented");
+        throw new Exception("not implemented (server)");
     }
 
     private Object createGame(Request req, Response res) throws Exception {
-        throw new Exception("not implemented");
+        throw new Exception("not implemented (server)");
     }
 
     private Object joinGame(Request req, Response res) throws Exception {
-        throw new Exception("not implemented");
+        throw new Exception("not implemented (server)");
     }
 }
