@@ -11,7 +11,7 @@ public class Main {
                 port = Integer.parseInt(args[0]);
             }
             var server = new Server().run(port);
-
+            System.out.printf("Started server on port: %s%n", port);
         } catch (Throwable ex) {
             System.out.printf("Unable to start server: %s%n", ex.getMessage());
         }
