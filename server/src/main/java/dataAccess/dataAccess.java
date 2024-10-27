@@ -1,9 +1,10 @@
 package dataAccess;
+import model.*;
 
-import model.User;
+import java.util.Collection;
 
-public class DataAccess {
-    public static void register(User user) throws Exception{
-        throw new Exception("not implemented (DataAccess)");
-    }
+public interface DataAccess {
+    void createUser(User user) throws DataAccessException;
+
+    User getUser(User user) throws DataAccessException;
 }

@@ -1,13 +1,17 @@
 package server;
 
-import dataAccess.DataAccessException;
+import dataAccess.DataMemory;
 import model.User;
 import service.ChessService;
 import spark.*;
 import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
 public class Server {
+    DataMemory dataAccess = new DataMemory();
+    private final ChessService service = new ChessService(dataAccess);
+
+    public Server() {
+    }
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
@@ -33,7 +37,7 @@ public class Server {
 
     private Object register(Request req, Response res) throws Exception {
         var user = new Gson().fromJson(req.body(), User.class);
-        ChessService.register(user);
+        this.service.register(user);
         throw new Exception("not implemented (server)");
     }
 

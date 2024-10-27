@@ -1,5 +1,4 @@
-import chess.*;
-import dataAccess.DataAccess;
+import dataAccess.DataMemory;
 import server.Server;
 import service.ChessService;
 

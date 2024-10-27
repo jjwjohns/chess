@@ -1,16 +1,18 @@
 package service;
 
-import dataAccess.DataAccess;
+import dataAccess.DataMemory;
 import model.User;
-import spark.Request;
 
 public class ChessService {
+    private final DataMemory dataAccess;
 
-    public static void register(User user) throws Exception{
-        DataAccess.register(user);
-        throw new Exception("not implemented (service)");
+    public ChessService(DataMemory dataAccess){
+        this.dataAccess = dataAccess;
     }
-    public static void addUser() throws Exception{
+    public void register(User user) throws Exception{
+        if (dataAccess.getUser(user) == null){
+            dataAccess.createUser(user);
+        }
         throw new Exception("not implemented (service)");
     }
 }
