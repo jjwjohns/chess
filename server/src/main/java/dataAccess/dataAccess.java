@@ -1,7 +1,6 @@
 package dataAccess;
 import model.*;
 
-import java.util.Collection;
 
 public interface DataAccess {
     void createUser(User user) throws DataAccessException;
@@ -9,4 +8,10 @@ public interface DataAccess {
     User getUser(User user) throws DataAccessException;
 
     Authtoken createAuth(String username) throws DataAccessException;
+
+    void deleteAuths() throws DataAccessException;
+
+    void deleteUsers() throws DataAccessException;
+
+    void deleteGames() throws DataAccessException;
 }

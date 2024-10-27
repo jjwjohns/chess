@@ -19,4 +19,10 @@ public class ChessService {
         }
         throw new Exception("not implemented (service)");
     }
+
+    public void clear() throws Exception{
+        dataAccess.deleteAuths();
+        dataAccess.deleteUsers();
+        dataAccess.deleteGames();
+    }
 }

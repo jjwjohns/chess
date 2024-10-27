@@ -24,6 +24,18 @@ public class DataMemory implements DataAccess {
         authdata.put(token, auth);
         return auth;
     }
+
+    public void deleteAuths() throws DataAccessException {
+        authdata.clear();
+    }
+
+    public void deleteUsers() throws DataAccessException {
+        users.clear();
+    }
+
+    public void deleteGames() throws DataAccessException {
+        games.clear();
+    }
 }
 
 //    public Collection<Pet> listPets() {

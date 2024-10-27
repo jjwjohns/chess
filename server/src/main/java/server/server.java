@@ -43,8 +43,11 @@ public class Server {
     }
 
     private Object clear(Request req, Response res) throws Exception {
-        throw new Exception("not implemented (server)");
+        this.service.clear();
+        res.status(200);
+        return "";
     }
+
 
     private Object login(Request req, Response res) throws Exception {
         throw new Exception("not implemented (server)");
