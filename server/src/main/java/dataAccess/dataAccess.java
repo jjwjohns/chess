@@ -7,4 +7,6 @@ public interface DataAccess {
     void createUser(User user) throws DataAccessException;
 
     User getUser(User user) throws DataAccessException;
+
+    Authtoken createAuth(String username) throws DataAccessException;
 }

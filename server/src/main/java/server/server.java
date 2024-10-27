@@ -1,6 +1,7 @@
 package server;
 
 import dataAccess.DataMemory;
+import model.Authtoken;
 import model.User;
 import service.ChessService;
 import spark.*;
@@ -37,8 +38,8 @@ public class Server {
 
     private Object register(Request req, Response res) throws Exception {
         var user = new Gson().fromJson(req.body(), User.class);
-        this.service.register(user);
-        throw new Exception("not implemented (server)");
+        Authtoken auth = this.service.register(user);
+        return new Gson().toJson(auth);
     }
 
     private Object clear(Request req, Response res) throws Exception {
