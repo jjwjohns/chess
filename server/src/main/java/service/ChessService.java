@@ -11,13 +11,14 @@ public class ChessService {
     public ChessService(DataMemory dataAccess){
         this.dataAccess = dataAccess;
     }
+
     public Authtoken register(User user) throws Exception{
-        if (dataAccess.getUser(user) == null){
+        if (dataAccess.getUser(user.username()) == null){
             dataAccess.createUser(user);
             Authtoken auth = dataAccess.createAuth(user.username());
             return auth;
         }
-        throw new Exception("not implemented (service)");
+        throw new Exception("Registration Error");
     }
 
     public void clear() throws Exception{

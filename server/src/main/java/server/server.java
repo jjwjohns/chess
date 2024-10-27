@@ -8,8 +8,8 @@ import spark.*;
 import com.google.gson.Gson;
 
 public class Server {
-    DataMemory dataAccess = new DataMemory();
-    private final ChessService service = new ChessService(dataAccess);
+    public DataMemory dataAccess = new DataMemory();
+    public ChessService service = new ChessService(dataAccess);
 
     public Server() {
     }

@@ -6,16 +6,16 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public class DataMemory implements DataAccess {
-    final private HashMap<String, User> users = new HashMap<>();
-    final private HashMap<String, Authtoken> authdata = new HashMap<>();
-    final private HashMap<String, Game> games = new HashMap<>();
+    private HashMap<String, User> users = new HashMap<>();
+    private HashMap<String, Authtoken> authdata = new HashMap<>();
+    private HashMap<String, Game> games = new HashMap<>();
 
     public void createUser(User user) {
         users.put(user.username(), user);
     }
 
-    public User getUser(User user) {
-        return users.get(user.username());
+    public User getUser(String user) {
+        return users.get(user);
     }
 
     public Authtoken createAuth (String username) {
