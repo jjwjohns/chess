@@ -19,6 +19,7 @@ public class Server {
 
         Spark.staticFiles.location("web");
 
+        Spark.get("/", (req, res) -> "CS 240 Chess Server Web API");
         Spark.post("/user", this::register);
         Spark.delete("/db", this::clear);
         Spark.post("/session", this::login);
