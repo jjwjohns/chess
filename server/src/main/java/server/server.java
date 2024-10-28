@@ -75,7 +75,12 @@ public class Server {
 
     private Object logout(Request req, Response res) throws Exception {
         String authToken = req.headers("Authorization");
-        this.service.logout(authToken);
+        Integer num = this.service.logout(authToken);
+        if (num == null){
+            res.status(401);
+            res.body("{\"message\": \"Error: unauthorized\"}");
+            return res.body();
+        }
         res.status(200);
         return "";
     }

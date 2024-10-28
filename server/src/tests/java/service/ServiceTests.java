@@ -59,6 +59,24 @@ public class ServiceTests {
         service.register(testuser);
         Assertions.assertNull(service.login(badlogin));
     }
+
+    @Test
+    public void testLogout_Positive() throws Exception {
+        LoginRequest login = new LoginRequest("user", "password");
+        service.register(testuser);
+        Authtoken auth = service.login(login);
+        service.logout(auth.authToken());
+        Assertions.assertNull(access.getAuth(auth.authToken()));
+    }
+
+    @Test
+    public void testLogout_Negative() throws Exception {
+        LoginRequest login = new LoginRequest("user", "password");
+        service.register(testuser);
+        Authtoken auth = service.login(login);
+        Assertions.assertNull(access.getAuth("badtoken"));
+        Assertions.assertNotNull(access.getAuth(auth.authToken()));
+    }
 }
 
 
