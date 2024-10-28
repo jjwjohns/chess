@@ -168,23 +168,23 @@ public class ChessGame {
 
 //                    king that may be in checkmate
                     if (piece.getPieceType() == ChessPiece.PieceType.KING && piece.getTeamColor() == teamColor){
-                        ChessPiece King = piece;
-                        Collection<ChessMove> moves = King.pieceMoves(board, position);
+                        ChessPiece king = piece;
+                        Collection<ChessMove> moves = king.pieceMoves(board, position);
 
                         for (ChessMove move : moves) {
                             ChessPosition start = move.getStartPosition();
                             ChessPosition end = move.getEndPosition();
                             ChessPiece target = board.getPiece(end);
 
-                            board.addPiece(end, King);
+                            board.addPiece(end, king);
                             board.addPiece(start, null);
                             if (!isInCheck(teamColor)) {
                                 board.addPiece(end, target);
-                                board.addPiece(start, King);
+                                board.addPiece(start, king);
                                 return false;
                             }
                             board.addPiece(end, target);
-                            board.addPiece(start, King);
+                            board.addPiece(start, king);
                         }
                     }
 //                    pieces of same color

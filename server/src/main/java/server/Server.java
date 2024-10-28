@@ -1,7 +1,7 @@
 package server;
 
 import chess.ChessGame;
-import dataAccess.DataMemory;
+import dataaccess.DataMemory;
 import model.*;
 import service.ChessService;
 import spark.*;

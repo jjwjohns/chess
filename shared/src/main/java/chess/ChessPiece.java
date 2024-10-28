@@ -1,5 +1,7 @@
 package chess;
 
+import chess.movecalculator.MovesCalculator;
+
 import java.util.Collection;
 import java.util.Objects;
 
@@ -78,22 +80,22 @@ public class ChessPiece {
 
     public Collection<ChessMove> pieceMoves(ChessBoard board, ChessPosition myPosition) {
         if (this.type == PieceType.BISHOP) {
-            return chess.move_calculator.moves_calculator.Bishop_move_calculator(this, board, myPosition);
+            return MovesCalculator.bishopMoveCalculator(this, board, myPosition);
         }
         else if (this.type == PieceType.KNIGHT) {
-            return chess.move_calculator.moves_calculator.Knight_move_calculator(this, board, myPosition);
+            return MovesCalculator.knightMoveCalculator(this, board, myPosition);
         }
         else if (this.type == PieceType.KING) {
-            return chess.move_calculator.moves_calculator.King_move_calculator(this, board, myPosition);
+            return MovesCalculator.kingMoveCalculator(this, board, myPosition);
         }
         else if (this.type == PieceType.QUEEN) {
-            return chess.move_calculator.moves_calculator.Queen_move_calculator(this, board, myPosition);
+            return MovesCalculator.queenMoveCalculator(this, board, myPosition);
         }
         else if (this.type == PieceType.ROOK) {
-            return chess.move_calculator.moves_calculator.Rook_move_calculator(this, board, myPosition);
+            return MovesCalculator.rookMoveCalculator(this, board, myPosition);
         }
         else if (this.type == PieceType.PAWN) {
-            return chess.move_calculator.moves_calculator.Pawn_move_calculator(this, board, myPosition);
+            return MovesCalculator.pawnMoveCalculator(this, board, myPosition);
         }
         else return null;
     }

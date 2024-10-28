@@ -1,147 +1,147 @@
 package service;
 
 import chess.ChessGame;
-import dataAccess.DataMemory;
+import dataaccess.DataMemory;
 import model.*;
 import org.junit.jupiter.api.*;
 import server.Server;
 
 public class ServiceTests {
-    private static final Server server = new Server();
-    private static final DataMemory access = server.dataAccess;
-    private static final ChessService service = server.service;
-    private static final User testuser = new User("user", "password", "email");
-    private static final LoginRequest login = new LoginRequest("user", "password");
-    private static final CreateRequest createRequest = new CreateRequest("test");
-    private static final JoinRequest joinRequest = new JoinRequest(ChessGame.TeamColor.WHITE, 1);
+    private static final Server SERVER = new Server();
+    private static final DataMemory ACCESS = SERVER.dataAccess;
+    private static final ChessService SERVICE = SERVER.service;
+    private static final User USER = new User("user", "password", "email");
+    private static final LoginRequest LOGIN_REQUEST = new LoginRequest("user", "password");
+    private static final CreateRequest CREATE_REQUEST = new CreateRequest("test");
+    private static final JoinRequest JOIN_REQUEST = new JoinRequest(ChessGame.TeamColor.WHITE, 1);
 
     @AfterAll
     static void clearData() throws Exception {
-        service.clear();
+        SERVICE.clear();
     }
 
     @Test
-    public void testClear_Positive() throws Exception {
-        access.createAuth("username");
-        access.createUser(testuser);
-        service.clear();
+    public void testClearPositive() throws Exception {
+        ACCESS.createAuth("username");
+        ACCESS.createUser(USER);
+        SERVICE.clear();
 
-        Assertions.assertNull(access.getUser("user"));
+        Assertions.assertNull(ACCESS.getUser("user"));
     }
 
     @Test
-    public void testClear_Empty() throws Exception {
+    public void testClearEmpty() throws Exception {
 //        clearing an empty database
-        service.clear();
+        SERVICE.clear();
 
-        Assertions.assertDoesNotThrow(() -> service.clear());
+        Assertions.assertDoesNotThrow(() -> SERVICE.clear());
     }
 
     @Test
-    public void testRegister_Positive() throws Exception {
-        service.register(testuser);
+    public void testRegisterPositive() throws Exception {
+        SERVICE.register(USER);
 
-        Assertions.assertSame(access.getUser("user"), testuser);
+        Assertions.assertSame(ACCESS.getUser("user"), USER);
     }
 
     @Test
-    public void testRegister_Negative() throws Exception {
-        service.register(testuser);
+    public void testRegisterNegative() throws Exception {
+        SERVICE.register(USER);
 
-        Assertions.assertNull(service.register(testuser));
+        Assertions.assertNull(SERVICE.register(USER));
     }
 
     @Test
-    public void testLogin_Positive() throws Exception {
-        service.register(testuser);
-        Authtoken auth = service.login(login);
+    public void testLoginPositive() throws Exception {
+        SERVICE.register(USER);
+        Authtoken auth = SERVICE.login(LOGIN_REQUEST);
 
-        Assertions.assertSame(login.username(), auth.username());
+        Assertions.assertSame(LOGIN_REQUEST.username(), auth.username());
     }
 
     @Test
-    public void testLogin_Negative() throws Exception {
+    public void testLoginNegative() throws Exception {
         LoginRequest badlogin = new LoginRequest("baduser", "password");
-        service.register(testuser);
+        SERVICE.register(USER);
 
-        Assertions.assertNull(service.login(badlogin));
+        Assertions.assertNull(SERVICE.login(badlogin));
     }
 
     @Test
-    public void testLogout_Positive() throws Exception {
-        service.register(testuser);
-        Authtoken auth = service.login(login);
-        service.logout(auth.authToken());
+    public void testLogoutPositive() throws Exception {
+        SERVICE.register(USER);
+        Authtoken auth = SERVICE.login(LOGIN_REQUEST);
+        SERVICE.logout(auth.authToken());
 
-        Assertions.assertNull(access.getAuth(auth.authToken()));
+        Assertions.assertNull(ACCESS.getAuth(auth.authToken()));
     }
 
     @Test
-    public void testLogout_Negative() throws Exception {
-        service.register(testuser);
-        Authtoken auth = service.login(login);
+    public void testLogoutNegative() throws Exception {
+        SERVICE.register(USER);
+        Authtoken auth = SERVICE.login(LOGIN_REQUEST);
 
-        Assertions.assertNull(access.getAuth("badtoken"));
-        Assertions.assertNotNull(access.getAuth(auth.authToken()));
+        Assertions.assertNull(ACCESS.getAuth("badtoken"));
+        Assertions.assertNotNull(ACCESS.getAuth(auth.authToken()));
     }
 
     @Test
-    public void testCreate_Positive() throws Exception {
-        CreateResult result = service.createGame(createRequest);
+    public void testCreatePositive() throws Exception {
+        CreateResult result = SERVICE.createGame(CREATE_REQUEST);
         Assertions.assertNotNull(result);
-        Game game = access.getGame(result.gameID());
+        Game game = ACCESS.getGame(result.gameID());
 
         Assertions.assertSame(game.gameName(), "test");
     }
 
     @Test
-    public void testCreate_Negative() throws Exception {
-        CreateResult result1 = service.createGame(createRequest);
-        CreateResult result2 = service.createGame(createRequest );
-        Game game1 = access.getGame(result1.gameID());
-        Game game2 = access.getGame(result2.gameID());
+    public void testCreateNegative() throws Exception {
+        CreateResult result1 = SERVICE.createGame(CREATE_REQUEST);
+        CreateResult result2 = SERVICE.createGame(CREATE_REQUEST);
+        Game game1 = ACCESS.getGame(result1.gameID());
+        Game game2 = ACCESS.getGame(result2.gameID());
 
         Assertions.assertNotSame(game1.gameID(), game2.gameID());
     }
 
     @Test
-    public void testList_Positive() throws Exception {
-        service.clear();
-        service.createGame(createRequest);
-        service.createGame(createRequest);
-        ListResult listResult = service.listGames();
+    public void testListPositive() throws Exception {
+        SERVICE.clear();
+        SERVICE.createGame(CREATE_REQUEST);
+        SERVICE.createGame(CREATE_REQUEST);
+        ListResult listResult = SERVICE.listGames();
 
         Assertions.assertNotNull(listResult);
         Assertions.assertEquals(2, listResult.games().size());
     }
 
     @Test
-    public void testList_Negative() throws Exception {
-        service.clear();
-        ListResult listResult = service.listGames();
+    public void testListNegative() throws Exception {
+        SERVICE.clear();
+        ListResult listResult = SERVICE.listGames();
 
         Assertions.assertTrue(listResult.games().isEmpty());
     }
 
     @Test
-    public void testJoin_Positive() throws Exception {
-        service.register(testuser);
-        Authtoken auth = service.login(login);
-        service.createGame(createRequest);
-        service.joinGame(joinRequest, auth.authToken());
-        Game game = access.getGame(1);
+    public void testJoinPositive() throws Exception {
+        SERVICE.register(USER);
+        Authtoken auth = SERVICE.login(LOGIN_REQUEST);
+        SERVICE.createGame(CREATE_REQUEST);
+        SERVICE.joinGame(JOIN_REQUEST, auth.authToken());
+        Game game = ACCESS.getGame(1);
 
         Assertions.assertSame("user", game.whiteUsername());
     }
 
     @Test
-    public void testJoin_Negative() throws Exception {
-        service.register(testuser);
-        service.login(login);
-        service.createGame(createRequest);
+    public void testJoinNegative() throws Exception {
+        SERVICE.register(USER);
+        SERVICE.login(LOGIN_REQUEST);
+        SERVICE.createGame(CREATE_REQUEST);
 
         Assertions.assertThrows(NullPointerException.class, () -> {
-            service.joinGame(joinRequest, "badtoken");
+            SERVICE.joinGame(JOIN_REQUEST, "badtoken");
         });
 
     }

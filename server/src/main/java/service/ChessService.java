@@ -1,7 +1,7 @@
 package service;
 
-import dataAccess.DataAccessException;
-import dataAccess.DataMemory;
+import dataaccess.DataAccessException;
+import dataaccess.DataMemory;
 import model.*;
 
 import java.util.Objects;
