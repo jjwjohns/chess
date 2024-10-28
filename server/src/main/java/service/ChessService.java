@@ -1,6 +1,5 @@
 package service;
 
-import chess.ChessGame;
 import dataAccess.DataAccessException;
 import dataAccess.DataMemory;
 import model.*;

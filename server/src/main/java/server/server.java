@@ -11,9 +11,6 @@ public class Server {
     public DataMemory dataAccess = new DataMemory();
     public ChessService service = new ChessService(dataAccess);
 
-    public Server() {
-    }
-
     public int run(int desiredPort) {
         Spark.port(desiredPort);
 

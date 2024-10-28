@@ -5,7 +5,6 @@ import model.*;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
 
 public class DataMemory implements DataAccess {
@@ -22,6 +21,7 @@ public class DataMemory implements DataAccess {
         return true;
     }
 
+    //    User methods
     public void createUser(User user) throws DataAccessException{
         users.put(user.username(), user);
     }
@@ -30,6 +30,7 @@ public class DataMemory implements DataAccess {
         return users.get(user);
     }
 
+    //    Auth methods
     public Authtoken createAuth (String username) throws DataAccessException{
         String token = UUID.randomUUID().toString();
         Authtoken auth = new Authtoken(token, username);
@@ -45,6 +46,7 @@ public class DataMemory implements DataAccess {
         authdata.remove(auth.authToken());
     }
 
+    //    Game methods
     public CreateResult addGame(String gameName) throws DataAccessException {
         games.put(nextId, new Game(nextId, null, null, gameName, new ChessGame()));
         nextId++;
@@ -78,6 +80,7 @@ public class DataMemory implements DataAccess {
         games.put(newGame.gameID(), newGame);
     }
 
+    //    clear methods
     public void deleteAuths() throws DataAccessException {
         authdata.clear();
     }
