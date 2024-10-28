@@ -11,6 +11,8 @@ public interface DataAccess {
 
     Authtoken getAuth(String auth) throws DataAccessException;
 
+    void deleteAuth(Authtoken token) throws DataAccessException;
+
     void deleteAuths() throws DataAccessException;
 
     void deleteUsers() throws DataAccessException;

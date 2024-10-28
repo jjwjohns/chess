@@ -74,7 +74,10 @@ public class Server {
     }
 
     private Object logout(Request req, Response res) throws Exception {
-        throw new Exception("not implemented (server)");
+        String authToken = req.headers("Authorization");
+        this.service.logout(authToken);
+        res.status(200);
+        return "";
     }
 
     private Object listGames(Request req, Response res) throws Exception {

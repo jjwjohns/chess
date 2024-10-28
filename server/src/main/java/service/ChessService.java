@@ -39,4 +39,13 @@ public class ChessService {
         }
         return dataAccess.createAuth(user.username());
     }
+
+    public Integer logout(String token) throws DataAccessException{
+        Authtoken auth = dataAccess.getAuth(token);
+        if (auth == null){
+            return null;
+        }
+        dataAccess.deleteAuth(auth);
+        return 200;
+    }
 }

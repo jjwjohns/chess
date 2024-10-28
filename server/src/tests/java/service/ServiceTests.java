@@ -5,9 +5,6 @@ import model.*;
 import org.junit.jupiter.api.*;
 import server.Server;
 
-import javax.xml.crypto.Data;
-
-
 public class ServiceTests {
     private static final Server server = new Server();
     private static final DataMemory access = server.dataAccess;
@@ -21,7 +18,6 @@ public class ServiceTests {
 
     @Test
     public void testClear_Positive() throws Exception {
-
         access.createAuth("username");
         access.createUser(testuser);
 
@@ -39,7 +35,6 @@ public class ServiceTests {
 
     @Test
     public void testRegister_Positive() throws Exception {
-
         service.register(testuser);
         Assertions.assertSame(access.getUser("user"), testuser);
     }

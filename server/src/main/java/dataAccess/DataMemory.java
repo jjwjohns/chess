@@ -29,6 +29,12 @@ public class DataMemory implements DataAccess {
         return authdata.get(auth);
     }
 
+
+
+    public void deleteAuth(Authtoken auth) throws DataAccessException{
+        authdata.remove(auth.authToken());
+    }
+
     public void deleteAuths() throws DataAccessException {
         authdata.clear();
     }
@@ -41,20 +47,3 @@ public class DataMemory implements DataAccess {
         games.clear();
     }
 }
-
-//    public Collection<Pet> listPets() {
-//        return pets.values();
-//    }
-//
-//
-//    public Pet getPet(int id) {
-//        return pets.get(id);
-//    }
-//
-//    public void deletePet(Integer id) {
-//        pets.remove(id);
-//    }
-//
-//    public void deleteAllPets() {
-//        pets.clear();
-//    }
