@@ -16,6 +16,7 @@ public class ServiceTests {
     private static final User testuser = new User("user", "password", "email");
     private static final LoginRequest login = new LoginRequest("user", "password");
     private static final CreateRequest createRequest = new CreateRequest("test");
+    private static final JoinRequest joinRequest = new JoinRequest(ChessGame.TeamColor.WHITE, 1);
 
     @AfterAll
     static void clearData() throws Exception {
@@ -108,6 +109,7 @@ public class ServiceTests {
 
     @Test
     public void testList_Positive() throws Exception {
+        service.clear();
         service.createGame(createRequest);
         service.createGame(createRequest);
         ListResult listResult = service.listGames();
@@ -118,6 +120,7 @@ public class ServiceTests {
 
     @Test
     public void testList_Negative() throws Exception {
+        service.clear();
         ListResult listResult = service.listGames();
 
         Assertions.assertTrue(listResult.games().isEmpty());
@@ -128,7 +131,6 @@ public class ServiceTests {
         service.register(testuser);
         Authtoken auth = service.login(login);
         service.createGame(createRequest);
-        JoinRequest joinRequest = new JoinRequest(ChessGame.TeamColor.WHITE, 1);
         service.joinGame(joinRequest, auth.authToken());
         Game game = access.getGame(1);
 
@@ -137,6 +139,14 @@ public class ServiceTests {
 
     @Test
     public void testJoin_Negative() throws Exception {
+        service.register(testuser);
+        service.login(login);
+        service.createGame(createRequest);
+
+        Assertions.assertThrows(NullPointerException.class, () -> {
+            service.joinGame(joinRequest, "badtoken");
+        });
+
     }
 }
 
