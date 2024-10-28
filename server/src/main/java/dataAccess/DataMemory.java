@@ -25,6 +25,10 @@ public class DataMemory implements DataAccess {
         return auth;
     }
 
+    public Authtoken getAuth(String auth) throws DataAccessException{
+        return authdata.get(auth);
+    }
+
     public void deleteAuths() throws DataAccessException {
         authdata.clear();
     }

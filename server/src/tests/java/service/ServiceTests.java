@@ -12,7 +12,7 @@ public class ServiceTests {
     private static final Server server = new Server();
     private static final DataMemory access = server.dataAccess;
     private static final ChessService service = server.service;
-    private static final User TestUser = new User("user", "password", "email");
+    private static final User testuser = new User("user", "password", "email");
 
     @AfterAll
     static void clearData() throws Exception {
@@ -23,7 +23,7 @@ public class ServiceTests {
     public void testClear_Positive() throws Exception {
 
         access.createAuth("username");
-        access.createUser(TestUser);
+        access.createUser(testuser);
 
         service.clear();
 
@@ -40,14 +40,29 @@ public class ServiceTests {
     @Test
     public void testRegister_Positive() throws Exception {
 
-        service.register(TestUser);
-        Assertions.assertSame(access.getUser("user"), TestUser);
+        service.register(testuser);
+        Assertions.assertSame(access.getUser("user"), testuser);
     }
 
     @Test
     public void testRegister_Negative() throws Exception {
-        service.register(TestUser);
-        Assertions.assertNull(service.register(TestUser));
+        service.register(testuser);
+        Assertions.assertNull(service.register(testuser));
+    }
+
+    @Test
+    public void testLogin_Positive() throws Exception {
+        LoginRequest login = new LoginRequest("user", "password");
+        service.register(testuser);
+        Authtoken auth = service.login(login);
+        Assertions.assertSame(login.username(), auth.username());
+    }
+
+    @Test
+    public void testLogin_Negative() throws Exception {
+        LoginRequest badlogin = new LoginRequest("baduser", "password");
+        service.register(testuser);
+        Assertions.assertNull(service.login(badlogin));
     }
 }
 

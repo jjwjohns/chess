@@ -9,6 +9,8 @@ public interface DataAccess {
 
     Authtoken createAuth(String username) throws DataAccessException;
 
+    Authtoken getAuth(String auth) throws DataAccessException;
+
     void deleteAuths() throws DataAccessException;
 
     void deleteUsers() throws DataAccessException;
