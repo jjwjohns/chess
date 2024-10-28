@@ -137,7 +137,8 @@ public class ChessGame {
                             ChessPosition end = move.getEndPosition();
 
                             if(board.getPiece(end) != null){
-                                if (board.getPiece(end).getPieceType() == ChessPiece.PieceType.KING && board.getPiece(end).getTeamColor() == teamColor){
+                                boolean boo = board.getPiece(end).getPieceType() == ChessPiece.PieceType.KING;
+                                if (boo && board.getPiece(end).getTeamColor() == teamColor){
                                     return true;
                                 }
                             }
