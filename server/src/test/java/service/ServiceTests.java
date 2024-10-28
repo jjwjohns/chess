@@ -127,9 +127,9 @@ public class ServiceTests {
     public void testJoinPositive() throws Exception {
         SERVICE.register(USER);
         Authtoken auth = SERVICE.login(LOGIN_REQUEST);
-        SERVICE.createGame(CREATE_REQUEST);
+        CreateResult createResult = SERVICE.createGame(CREATE_REQUEST);
         SERVICE.joinGame(JOIN_REQUEST, auth.authToken());
-        Game game = ACCESS.getGame(1);
+        Game game = ACCESS.getGame(createResult.gameID());
 
         Assertions.assertSame("user", game.whiteUsername());
     }

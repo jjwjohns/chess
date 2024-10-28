@@ -91,5 +91,6 @@ public class DataMemory implements DataAccess {
 
     public void deleteGames() throws DataAccessException {
         games.clear();
+        this.nextId = 1;
     }
 }
