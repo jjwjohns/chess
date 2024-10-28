@@ -31,7 +31,7 @@ public class ServiceTests {
     }
 
     @Test
-    public void testClear_Negative() throws Exception {
+    public void testClear_Empty() throws Exception {
 //        clearing an empty database
         service.clear();
         Assertions.assertDoesNotThrow(() -> service.clear());

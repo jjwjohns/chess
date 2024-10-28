@@ -17,7 +17,7 @@ public class Server {
     public int run(int desiredPort) {
         Spark.port(desiredPort);
 
-        Spark.staticFiles.location("web");
+        Spark.staticFiles.externalLocation("src/resources/web");
 
         Spark.get("/", (req, res) -> "CS 240 Chess Server Web API");
         Spark.post("/user", this::register);
@@ -39,6 +39,11 @@ public class Server {
 
     private Object register(Request req, Response res) throws Exception{
         var user = new Gson().fromJson(req.body(), User.class);
+        if(user.username() == null || user.email() == null || user.password() == null){
+            res.status(400);
+            res.body("{\"message\": \"Error: bad request\"}");
+            return res.body();
+        }
         Authtoken auth = this.service.register(user);
         if (auth == null) {
             res.status(403);
