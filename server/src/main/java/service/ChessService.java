@@ -3,6 +3,7 @@ package service;
 import dataAccess.DataAccessException;
 import dataAccess.DataMemory;
 import model.Authtoken;
+import model.LoginRequest;
 import model.User;
 import spark.*;
 import org.eclipse.jetty.security.authentication.AuthorizationService;
@@ -27,5 +28,10 @@ public class ChessService {
         dataAccess.deleteAuths();
         dataAccess.deleteUsers();
         dataAccess.deleteGames();
+    }
+
+    public Authtoken login(LoginRequest login) throws DataAccessException{
+        User user = dataAccess.getUser(login.username());
+        return dataAccess.createAuth(user.username());
     }
 }

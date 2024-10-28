@@ -2,6 +2,7 @@ package server;
 
 import dataAccess.DataMemory;
 import model.Authtoken;
+import model.LoginRequest;
 import model.User;
 import service.ChessService;
 import spark.*;
@@ -50,7 +51,6 @@ public class Server {
             res.body("{\"message\": \"Error: already taken\"}");
             return res.body();
         }
-
         res.status(200);
         return new Gson().toJson(auth);
     }
@@ -63,7 +63,10 @@ public class Server {
 
 
     private Object login(Request req, Response res) throws Exception {
-        throw new Exception("not implemented (server)");
+        var login = new Gson().fromJson(req.body(), LoginRequest.class);
+        Authtoken auth = this.service.login(login);
+        res.status(200);
+        return new Gson().toJson(auth);
     }
 
     private Object logout(Request req, Response res) throws Exception {
