@@ -47,6 +47,10 @@ public class ChessService {
         return dataAccess.addGame(request.gameName());
     }
 
+    public ListResult listGames() throws DataAccessException{
+        return dataAccess.listGames();
+    }
+
     public void joinGame(JoinRequest request, String token) throws DataAccessException{
         String username = dataAccess.getAuth(token).username();
         dataAccess.joinGame(username, request);

@@ -3,7 +3,9 @@ package dataAccess;
 import chess.ChessGame;
 import model.*;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 public class DataMemory implements DataAccess {
@@ -44,7 +46,7 @@ public class DataMemory implements DataAccess {
     }
 
     public CreateResult addGame(String gameName) throws DataAccessException {
-        games.put(nextId, new Game(nextId, "", "", gameName, new ChessGame()));
+        games.put(nextId, new Game(nextId, null, null, gameName, new ChessGame()));
         nextId++;
         return new CreateResult((nextId - 1));
     }
@@ -55,6 +57,10 @@ public class DataMemory implements DataAccess {
 
     public void deleteGame(Integer gameID) throws DataAccessException{
         games.remove(gameID);
+    }
+
+    public ListResult listGames() throws DataAccessException{
+        return new ListResult(new ArrayList<>(games.values()));
     }
 
     public void joinGame(String username, JoinRequest request) throws DataAccessException {

@@ -20,6 +20,8 @@ public interface DataAccess {
 
     Game getGame(int gameID) throws DataAccessException;
 
+    ListResult listGames() throws DataAccessException;
+
     void deleteGame(Integer gameID) throws DataAccessException;
 
     void joinGame(String username, JoinRequest request) throws DataAccessException;

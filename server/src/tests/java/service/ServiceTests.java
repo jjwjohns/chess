@@ -6,6 +6,9 @@ import model.*;
 import org.junit.jupiter.api.*;
 import server.Server;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ServiceTests {
     private static final Server server = new Server();
     private static final DataMemory access = server.dataAccess;
@@ -93,6 +96,25 @@ public class ServiceTests {
         Game game1 = access.getGame(result1.gameID());
         Game game2 = access.getGame(result2.gameID());
         Assertions.assertNotSame(game1.gameID(), game2.gameID());
+    }
+
+    @Test
+    public void testList_Positive() throws Exception {
+        service.createGame(createRequest);
+        service.createGame(createRequest);
+        ListResult listResult = service.listGames();
+//        List<Game> games = new ArrayList<>();
+//        games.add(new Game(1, null, null, "test", new ChessGame()));
+//        games.add(new Game(2, null, null, "test", new ChessGame()));
+
+        Assertions.assertNotNull(listResult);
+        Assertions.assertEquals(2, listResult.games().size());
+    }
+
+    @Test
+    public void testList_Negative() throws Exception {
+        ListResult listResult = service.listGames();
+        Assertions.assertTrue(listResult.games().isEmpty());
     }
 
     @Test

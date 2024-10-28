@@ -98,10 +98,28 @@ public class Server {
         return res.body();
     }
 
+    private Object listGames(Request req, Response res) throws Exception {
+        String authToken = req.headers("Authorization");
+        if (dataAccess.authorize(authToken)){
+            ListResult result = this.service.listGames();
+            res.status(200);
+            return new Gson().toJson(result);
+        }
+        res.status(401);
+        res.body("{\"message\": \"Error: unauthorized\"}");
+        return res.body();
+    }
+
     private Object joinGame(Request req, Response res) throws Exception {
         JoinRequest joinRequest = new Gson().fromJson(req.body(), JoinRequest.class);
         String authToken = req.headers("Authorization");
         if (dataAccess.authorize(authToken)){
+            if (joinRequest.gameID() == null || joinRequest.playerColor() == null){
+                res.status(400);
+                res.body("{\"message\": \"Error: bad request (null values)\"}");
+                return res.body();
+            }
+//            else if (dataAccess.getGame(joinRequest.gameID()).
             this.service.joinGame(joinRequest, authToken);
             res.status(200);
             return "";
@@ -110,9 +128,4 @@ public class Server {
         res.body("{\"message\": \"Error: unauthorized\"}");
         return res.body();
     }
-
-    private Object listGames(Request req, Response res) throws Exception {
-        throw new Exception("not implemented (server)");
-    }
-
 }
