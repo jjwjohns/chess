@@ -14,7 +14,9 @@ public class MovesCalculator {
         Collection<ChessMove> chessMoves = new ArrayList<>();
         for (int[] direction : moves) {
             if (row + direction[0] >= 1 && row + direction[0] <= 8 && col + direction[1] >= 1 && col + direction[1] <= 8) {
-                for (int newR = row + direction[0], newC = col + direction[1]; newR <= 8 && newC <= 8 && newR >= 1 && newC >= 1; newR += direction[0], newC += direction[1]) {
+                int newR = row + direction[0];
+                int newC = col + direction[1];
+                while (newR <= 8 && newC <= 8 && newR >= 1 && newC >= 1) {
                     ChessPosition newPosition = new ChessPosition(newR, newC);
                     if (board.getPiece(newPosition) == null) {
                         chessMoves.add(new ChessMove(new ChessPosition(row, col), new ChessPosition(newR, newC), null));
@@ -24,6 +26,8 @@ public class MovesCalculator {
                     } else {
                         break;
                     }
+                    newR += direction[0];
+                    newC += direction[1];
                 }
             }
         }
@@ -45,22 +49,23 @@ public class MovesCalculator {
         int col = position.getColumn();
 
         int[][] possibleMoves = {{1, 2}, {1, -2}, {-1, 2}, {-1, -2}, {2, 1}, {-2, 1}, {-2, -1}, {2, -1}};
-        return getChessMoves(piece, board, chessMoves, row, col, possibleMoves);
+        return getMoves(piece, board, chessMoves, row, col, possibleMoves);
     }
 
-    private static Collection<ChessMove> getChessMoves(ChessPiece piece, ChessBoard board, Collection<ChessMove> chessMoves, int row, int col, int[][] possibleMoves) {
-        for (int[] move : possibleMoves) {
+    private static Collection<ChessMove> getMoves(ChessPiece piece, ChessBoard board, Collection<ChessMove> moves, int row, int col, int[][] ways) {
+        for (int[] move : ways) {
             int newR = row + move[0];
+
             int newC = col + move[1];
 
             if (newR <= 8 && newC <= 8 && newR >= 1 && newC >= 1) {
                 ChessPosition newPosition = new ChessPosition(newR, newC);
                 if (board.getPiece(newPosition) == null || board.getPiece(newPosition).getTeamColor() != piece.getTeamColor()) {
-                    chessMoves.add(new ChessMove(new ChessPosition(row, col), new ChessPosition(newR, newC), null));
+                    moves.add(new ChessMove(new ChessPosition(row, col), new ChessPosition(newR, newC), null));
                 }
             }
         }
-        return chessMoves;
+        return moves;
     }
 
     public static Collection<ChessMove> kingMoveCalculator(ChessPiece piece, ChessBoard board, ChessPosition position) {
@@ -69,7 +74,7 @@ public class MovesCalculator {
         int col = position.getColumn();
         int[][] possibleMoves = {{1, 1}, {1, -1}, {1, 0}, {0, 1}, {0, -1}, {-1, 1}, {-1, 0}, {-1, -1}};
 
-        return getChessMoves(piece, board, chessMoves, row, col, possibleMoves);
+        return getMoves(piece, board, chessMoves, row, col, possibleMoves);
     }
 
 
