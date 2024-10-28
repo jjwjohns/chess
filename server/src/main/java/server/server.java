@@ -1,5 +1,6 @@
 package server;
 
+import chess.ChessGame;
 import dataAccess.DataMemory;
 import model.*;
 import service.ChessService;
@@ -18,7 +19,7 @@ public class Server {
 
         Spark.staticFiles.externalLocation("src/resources/web");
 
-        Spark.get("/", (req, res) -> "CS 240 Chess Server Web API");
+//        Spark.get("/", (req, res) -> "CS 240 Chess Server Web API");
         Spark.post("/user", this::register);
         Spark.delete("/db", this::clear);
         Spark.post("/session", this::login);
@@ -119,7 +120,20 @@ public class Server {
                 res.body("{\"message\": \"Error: bad request (null values)\"}");
                 return res.body();
             }
-//            else if (dataAccess.getGame(joinRequest.gameID()).
+            if (joinRequest.playerColor() == ChessGame.TeamColor.WHITE){
+                if (dataAccess.getGame(joinRequest.gameID()).whiteUsername() != null){
+                    res.status(403);
+                    res.body("{\"message\": \"Error: already taken\"}");
+                    return res.body();
+                }
+            }
+            else if (joinRequest.playerColor() == ChessGame.TeamColor.BLACK){
+                if (dataAccess.getGame(joinRequest.gameID()).blackUsername() != null){
+                    res.status(403);
+                    res.body("{\"message\": \"Error: already taken\"}");
+                    return res.body();
+                }
+            }
             this.service.joinGame(joinRequest, authToken);
             res.status(200);
             return "";

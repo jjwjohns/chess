@@ -26,7 +26,6 @@ public class ServiceTests {
     public void testClear_Positive() throws Exception {
         access.createAuth("username");
         access.createUser(testuser);
-
         service.clear();
 
         Assertions.assertNull(access.getUser("user"));
@@ -36,18 +35,21 @@ public class ServiceTests {
     public void testClear_Empty() throws Exception {
 //        clearing an empty database
         service.clear();
+
         Assertions.assertDoesNotThrow(() -> service.clear());
     }
 
     @Test
     public void testRegister_Positive() throws Exception {
         service.register(testuser);
+
         Assertions.assertSame(access.getUser("user"), testuser);
     }
 
     @Test
     public void testRegister_Negative() throws Exception {
         service.register(testuser);
+
         Assertions.assertNull(service.register(testuser));
     }
 
@@ -55,6 +57,7 @@ public class ServiceTests {
     public void testLogin_Positive() throws Exception {
         service.register(testuser);
         Authtoken auth = service.login(login);
+
         Assertions.assertSame(login.username(), auth.username());
     }
 
@@ -62,6 +65,7 @@ public class ServiceTests {
     public void testLogin_Negative() throws Exception {
         LoginRequest badlogin = new LoginRequest("baduser", "password");
         service.register(testuser);
+
         Assertions.assertNull(service.login(badlogin));
     }
 
@@ -70,6 +74,7 @@ public class ServiceTests {
         service.register(testuser);
         Authtoken auth = service.login(login);
         service.logout(auth.authToken());
+
         Assertions.assertNull(access.getAuth(auth.authToken()));
     }
 
@@ -77,6 +82,7 @@ public class ServiceTests {
     public void testLogout_Negative() throws Exception {
         service.register(testuser);
         Authtoken auth = service.login(login);
+
         Assertions.assertNull(access.getAuth("badtoken"));
         Assertions.assertNotNull(access.getAuth(auth.authToken()));
     }
@@ -86,6 +92,7 @@ public class ServiceTests {
         CreateResult result = service.createGame(createRequest);
         Assertions.assertNotNull(result);
         Game game = access.getGame(result.gameID());
+
         Assertions.assertSame(game.gameName(), "test");
     }
 
@@ -95,6 +102,7 @@ public class ServiceTests {
         CreateResult result2 = service.createGame(createRequest );
         Game game1 = access.getGame(result1.gameID());
         Game game2 = access.getGame(result2.gameID());
+
         Assertions.assertNotSame(game1.gameID(), game2.gameID());
     }
 
@@ -103,9 +111,6 @@ public class ServiceTests {
         service.createGame(createRequest);
         service.createGame(createRequest);
         ListResult listResult = service.listGames();
-//        List<Game> games = new ArrayList<>();
-//        games.add(new Game(1, null, null, "test", new ChessGame()));
-//        games.add(new Game(2, null, null, "test", new ChessGame()));
 
         Assertions.assertNotNull(listResult);
         Assertions.assertEquals(2, listResult.games().size());
@@ -114,6 +119,7 @@ public class ServiceTests {
     @Test
     public void testList_Negative() throws Exception {
         ListResult listResult = service.listGames();
+
         Assertions.assertTrue(listResult.games().isEmpty());
     }
 
@@ -125,6 +131,7 @@ public class ServiceTests {
         JoinRequest joinRequest = new JoinRequest(ChessGame.TeamColor.WHITE, 1);
         service.joinGame(joinRequest, auth.authToken());
         Game game = access.getGame(1);
+
         Assertions.assertSame("user", game.whiteUsername());
     }
 

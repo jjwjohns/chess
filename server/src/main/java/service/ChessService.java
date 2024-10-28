@@ -37,10 +37,9 @@ public class ChessService {
         return dataAccess.createAuth(user.username());
     }
 
-    public Integer logout(String token) throws DataAccessException{
+    public void logout(String token) throws DataAccessException{
         Authtoken auth = dataAccess.getAuth(token);
         dataAccess.deleteAuth(auth);
-        return 200;
     }
 
     public CreateResult createGame(CreateRequest request) throws DataAccessException{
