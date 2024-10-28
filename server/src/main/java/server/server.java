@@ -61,10 +61,14 @@ public class Server {
         return "";
     }
 
-
     private Object login(Request req, Response res) throws Exception {
         var login = new Gson().fromJson(req.body(), LoginRequest.class);
         Authtoken auth = this.service.login(login);
+        if (auth == null){
+            res.status(401);
+            res.body("{\"message\": \"Error: unauthorized\"}");
+            return res.body();
+        }
         res.status(200);
         return new Gson().toJson(auth);
     }

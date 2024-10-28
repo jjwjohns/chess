@@ -8,6 +8,8 @@ import model.User;
 import spark.*;
 import org.eclipse.jetty.security.authentication.AuthorizationService;
 
+import java.util.Objects;
+
 public class ChessService {
     private final DataMemory dataAccess;
 
@@ -32,6 +34,9 @@ public class ChessService {
 
     public Authtoken login(LoginRequest login) throws DataAccessException{
         User user = dataAccess.getUser(login.username());
+        if (user == null || !Objects.equals(user.password(), login.password())){
+            return null;
+        }
         return dataAccess.createAuth(user.username());
     }
 }
