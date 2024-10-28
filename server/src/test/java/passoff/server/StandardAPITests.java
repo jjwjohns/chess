@@ -62,7 +62,6 @@ public class StandardAPITests {
         Assertions.assertEquals(HttpURLConnection.HTTP_OK, serverFacade.getStatusCode(),
                 "Server response code was not 200 OK");
         Assertions.assertNotNull(htmlFromServer, "Server returned an empty file");
-        System.out.println("HTML Response: " + htmlFromServer);
         Assertions.assertTrue(htmlFromServer.contains("CS 240 Chess Server Web API"));
     }
 
@@ -119,7 +118,7 @@ public class StandardAPITests {
     public void registerTwice() {
         //submit register request trying to register existing user
         TestAuthResult registerResult = serverFacade.register(existingUser);
-        System.out.println(registerResult);
+
         assertHttpForbidden(registerResult);
         assertAuthFieldsMissing(registerResult);
     }
