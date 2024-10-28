@@ -2,11 +2,7 @@ package service;
 
 import dataAccess.DataAccessException;
 import dataAccess.DataMemory;
-import model.Authtoken;
-import model.LoginRequest;
-import model.User;
-import spark.*;
-import org.eclipse.jetty.security.authentication.AuthorizationService;
+import model.*;
 
 import java.util.Objects;
 
@@ -42,10 +38,11 @@ public class ChessService {
 
     public Integer logout(String token) throws DataAccessException{
         Authtoken auth = dataAccess.getAuth(token);
-        if (auth == null){
-            return null;
-        }
         dataAccess.deleteAuth(auth);
         return 200;
+    }
+
+    public CreateResult createGame(CreateRequest request) throws DataAccessException{
+        return dataAccess.addGame(request.gameName());
     }
 }

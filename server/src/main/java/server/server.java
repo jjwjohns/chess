@@ -1,9 +1,7 @@
 package server;
 
 import dataAccess.DataMemory;
-import model.Authtoken;
-import model.LoginRequest;
-import model.User;
+import model.*;
 import service.ChessService;
 import spark.*;
 import com.google.gson.Gson;
@@ -40,6 +38,7 @@ public class Server {
 
     private Object register(Request req, Response res) throws Exception{
         var user = new Gson().fromJson(req.body(), User.class);
+
         if(user.username() == null || user.email() == null || user.password() == null){
             res.status(400);
             res.body("{\"message\": \"Error: bad request\"}");
@@ -64,6 +63,7 @@ public class Server {
     private Object login(Request req, Response res) throws Exception {
         var login = new Gson().fromJson(req.body(), LoginRequest.class);
         Authtoken auth = this.service.login(login);
+
         if (auth == null){
             res.status(401);
             res.body("{\"message\": \"Error: unauthorized\"}");
@@ -75,21 +75,30 @@ public class Server {
 
     private Object logout(Request req, Response res) throws Exception {
         String authToken = req.headers("Authorization");
-        Integer num = this.service.logout(authToken);
-        if (num == null){
-            res.status(401);
-            res.body("{\"message\": \"Error: unauthorized\"}");
-            return res.body();
+        if (dataAccess.authorize(authToken)){
+            this.service.logout(authToken);
+            res.status(200);
+            return "";
         }
-        res.status(200);
-        return "";
-    }
-
-    private Object listGames(Request req, Response res) throws Exception {
-        throw new Exception("not implemented (server)");
+        res.status(401);
+        res.body("{\"message\": \"Error: unauthorized\"}");
+        return res.body();
     }
 
     private Object createGame(Request req, Response res) throws Exception {
+        CreateRequest createRequest = new Gson().fromJson(req.body(), CreateRequest.class);
+        String authToken = req.headers("Authorization");
+        if (dataAccess.authorize(authToken)){
+            CreateResult result = this.service.createGame(createRequest);
+            res.status(200);
+            return new Gson().toJson(result);
+        }
+        res.status(401);
+        res.body("{\"message\": \"Error: unauthorized\"}");
+        return res.body();
+    }
+
+    private Object listGames(Request req, Response res) throws Exception {
         throw new Exception("not implemented (server)");
     }
 

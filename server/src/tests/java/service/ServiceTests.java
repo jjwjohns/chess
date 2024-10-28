@@ -10,6 +10,8 @@ public class ServiceTests {
     private static final DataMemory access = server.dataAccess;
     private static final ChessService service = server.service;
     private static final User testuser = new User("user", "password", "email");
+    private static final LoginRequest login = new LoginRequest("user", "password");
+    private static final CreateRequest request = new CreateRequest("test");
 
     @AfterAll
     static void clearData() throws Exception {
@@ -47,7 +49,6 @@ public class ServiceTests {
 
     @Test
     public void testLogin_Positive() throws Exception {
-        LoginRequest login = new LoginRequest("user", "password");
         service.register(testuser);
         Authtoken auth = service.login(login);
         Assertions.assertSame(login.username(), auth.username());
@@ -62,7 +63,6 @@ public class ServiceTests {
 
     @Test
     public void testLogout_Positive() throws Exception {
-        LoginRequest login = new LoginRequest("user", "password");
         service.register(testuser);
         Authtoken auth = service.login(login);
         service.logout(auth.authToken());
@@ -71,11 +71,27 @@ public class ServiceTests {
 
     @Test
     public void testLogout_Negative() throws Exception {
-        LoginRequest login = new LoginRequest("user", "password");
         service.register(testuser);
         Authtoken auth = service.login(login);
         Assertions.assertNull(access.getAuth("badtoken"));
         Assertions.assertNotNull(access.getAuth(auth.authToken()));
+    }
+
+    @Test
+    public void testCreate_Positive() throws Exception {
+        CreateResult result = service.createGame(request);
+        Assertions.assertNotNull(result);
+        Game game = access.getGame(result.gameID());
+        Assertions.assertSame(game.gameName(), "test");
+    }
+
+    @Test
+    public void testCreate_Negative() throws Exception {
+        CreateResult result1 = service.createGame(request);
+        CreateResult result2 = service.createGame(request);
+        Game game1 = access.getGame(result1.gameID());
+        Game game2 = access.getGame(result2.gameID());
+        Assertions.assertNotSame(game1.gameID(), game2.gameID());
     }
 }
 
