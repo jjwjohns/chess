@@ -119,7 +119,7 @@ public class StandardAPITests {
     public void registerTwice() {
         //submit register request trying to register existing user
         TestAuthResult registerResult = serverFacade.register(existingUser);
-
+        System.out.println(registerResult);
         assertHttpForbidden(registerResult);
         assertAuthFieldsMissing(registerResult);
     }

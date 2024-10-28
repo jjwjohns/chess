@@ -37,13 +37,20 @@ public class Server {
         Spark.awaitStop();
     }
 
-    private Object register(Request req, Response res) throws Exception {
+    private Object register(Request req, Response res) throws Exception{
         var user = new Gson().fromJson(req.body(), User.class);
         Authtoken auth = this.service.register(user);
+        if (auth == null) {
+            res.status(403);
+            res.body("{\"message\": \"Error: already taken\"}");
+            return res.body();
+        }
+
+        res.status(200);
         return new Gson().toJson(auth);
     }
 
-    private Object clear(Request req, Response res) throws Exception {
+    private Object clear(Request req, Response res) throws Exception{
         this.service.clear();
         res.status(200);
         return "";

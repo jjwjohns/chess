@@ -9,10 +9,10 @@ import javax.xml.crypto.Data;
 
 
 public class ServiceTests {
-    private static Server server = new Server();
-    private static DataMemory access = server.dataAccess;
-    private static ChessService service = server.service;
-    private static User TestUser = new User("user", "password", "email");
+    private static final Server server = new Server();
+    private static final DataMemory access = server.dataAccess;
+    private static final ChessService service = server.service;
+    private static final User TestUser = new User("user", "password", "email");
 
     @AfterAll
     static void clearData() throws Exception {
@@ -32,7 +32,7 @@ public class ServiceTests {
 
     @Test
     public void testClear_Negative() throws Exception {
-//        #clearing an empty database
+//        clearing an empty database
         service.clear();
         Assertions.assertDoesNotThrow(() -> service.clear());
     }
@@ -46,9 +46,8 @@ public class ServiceTests {
 
     @Test
     public void testRegister_Negative() throws Exception {
-//        #clearing an empty database
-        service.clear();
-        Assertions.assertDoesNotThrow(() -> service.clear());
+        service.register(TestUser);
+        Assertions.assertNull(service.register(TestUser));
     }
 }
 

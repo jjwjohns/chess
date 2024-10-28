@@ -10,15 +10,15 @@ public class DataMemory implements DataAccess {
     private HashMap<String, Authtoken> authdata = new HashMap<>();
     private HashMap<String, Game> games = new HashMap<>();
 
-    public void createUser(User user) {
+    public void createUser(User user) throws DataAccessException{
         users.put(user.username(), user);
     }
 
-    public User getUser(String user) {
+    public User getUser(String user) throws DataAccessException{
         return users.get(user);
     }
 
-    public Authtoken createAuth (String username) {
+    public Authtoken createAuth (String username) throws DataAccessException{
         String token = UUID.randomUUID().toString();
         Authtoken auth = new Authtoken(token, username);
         authdata.put(token, auth);
