@@ -1,8 +1,6 @@
 import chess.ChessGame;
 import chess.ChessPiece;
-import dataAccess.DataMemory;
 import server.Server;
-import service.ChessService;
 
 public class Main {
     public static void main(String[] args) {

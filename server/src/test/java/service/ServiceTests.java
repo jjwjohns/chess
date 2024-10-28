@@ -6,9 +6,6 @@ import model.*;
 import org.junit.jupiter.api.*;
 import server.Server;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class ServiceTests {
     private static final Server server = new Server();
     private static final DataMemory access = server.dataAccess;
