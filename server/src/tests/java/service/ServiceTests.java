@@ -1,5 +1,6 @@
 package service;
 
+import chess.ChessGame;
 import dataAccess.DataMemory;
 import model.*;
 import org.junit.jupiter.api.*;
@@ -11,7 +12,7 @@ public class ServiceTests {
     private static final ChessService service = server.service;
     private static final User testuser = new User("user", "password", "email");
     private static final LoginRequest login = new LoginRequest("user", "password");
-    private static final CreateRequest request = new CreateRequest("test");
+    private static final CreateRequest createRequest = new CreateRequest("test");
 
     @AfterAll
     static void clearData() throws Exception {
@@ -79,7 +80,7 @@ public class ServiceTests {
 
     @Test
     public void testCreate_Positive() throws Exception {
-        CreateResult result = service.createGame(request);
+        CreateResult result = service.createGame(createRequest);
         Assertions.assertNotNull(result);
         Game game = access.getGame(result.gameID());
         Assertions.assertSame(game.gameName(), "test");
@@ -87,11 +88,26 @@ public class ServiceTests {
 
     @Test
     public void testCreate_Negative() throws Exception {
-        CreateResult result1 = service.createGame(request);
-        CreateResult result2 = service.createGame(request);
+        CreateResult result1 = service.createGame(createRequest);
+        CreateResult result2 = service.createGame(createRequest );
         Game game1 = access.getGame(result1.gameID());
         Game game2 = access.getGame(result2.gameID());
         Assertions.assertNotSame(game1.gameID(), game2.gameID());
+    }
+
+    @Test
+    public void testJoin_Positive() throws Exception {
+        service.register(testuser);
+        Authtoken auth = service.login(login);
+        service.createGame(createRequest);
+        JoinRequest joinRequest = new JoinRequest(ChessGame.TeamColor.WHITE, 1);
+        service.joinGame(joinRequest, auth.authToken());
+        Game game = access.getGame(1);
+        Assertions.assertSame("user", game.whiteUsername());
+    }
+
+    @Test
+    public void testJoin_Negative() throws Exception {
     }
 }
 

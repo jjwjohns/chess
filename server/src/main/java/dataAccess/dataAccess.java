@@ -1,4 +1,5 @@
 package dataAccess;
+import chess.ChessGame;
 import model.*;
 
 
@@ -18,6 +19,10 @@ public interface DataAccess {
     CreateResult addGame(String gameName) throws DataAccessException;
 
     Game getGame(int gameID) throws DataAccessException;
+
+    void deleteGame(Integer gameID) throws DataAccessException;
+
+    void joinGame(String username, JoinRequest request) throws DataAccessException;
 
     void deleteAuths() throws DataAccessException;
 

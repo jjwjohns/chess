@@ -53,6 +53,25 @@ public class DataMemory implements DataAccess {
         return games.get(gameID);
     }
 
+    public void deleteGame(Integer gameID) throws DataAccessException{
+        games.remove(gameID);
+    }
+
+    public void joinGame(String username, JoinRequest request) throws DataAccessException {
+        Game game = getGame(request.gameID());
+        ChessGame.TeamColor color = request.playerColor();
+        Game newGame;
+
+        if (color == ChessGame.TeamColor.WHITE){
+            newGame = new Game(game.gameID(), username, game.blackUsername(), game.gameName(), game.game());
+        }
+        else {
+            newGame = new Game(game.gameID(), game.whiteUsername(), username, game.gameName(), game.game());
+        }
+        deleteGame(game.gameID());
+        games.put(newGame.gameID(), newGame);
+    }
+
     public void deleteAuths() throws DataAccessException {
         authdata.clear();
     }

@@ -1,5 +1,6 @@
 package service;
 
+import chess.ChessGame;
 import dataAccess.DataAccessException;
 import dataAccess.DataMemory;
 import model.*;
@@ -44,5 +45,10 @@ public class ChessService {
 
     public CreateResult createGame(CreateRequest request) throws DataAccessException{
         return dataAccess.addGame(request.gameName());
+    }
+
+    public void joinGame(JoinRequest request, String token) throws DataAccessException{
+        String username = dataAccess.getAuth(token).username();
+        dataAccess.joinGame(username, request);
     }
 }

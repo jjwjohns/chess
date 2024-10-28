@@ -98,11 +98,21 @@ public class Server {
         return res.body();
     }
 
+    private Object joinGame(Request req, Response res) throws Exception {
+        JoinRequest joinRequest = new Gson().fromJson(req.body(), JoinRequest.class);
+        String authToken = req.headers("Authorization");
+        if (dataAccess.authorize(authToken)){
+            this.service.joinGame(joinRequest, authToken);
+            res.status(200);
+            return "";
+        }
+        res.status(401);
+        res.body("{\"message\": \"Error: unauthorized\"}");
+        return res.body();
+    }
+
     private Object listGames(Request req, Response res) throws Exception {
         throw new Exception("not implemented (server)");
     }
 
-    private Object joinGame(Request req, Response res) throws Exception {
-        throw new Exception("not implemented (server)");
-    }
 }
