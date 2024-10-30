@@ -15,8 +15,8 @@ public class ServiceTests {
     private static final CreateRequest CREATE_REQUEST = new CreateRequest("test");
     private static final JoinRequest JOIN_REQUEST = new JoinRequest(ChessGame.TeamColor.WHITE, 1);
 
-    @AfterAll
-    static void clearData() throws Exception {
+    @AfterEach
+    void clearData() throws Exception {
         SERVICE.clear();
     }
 
