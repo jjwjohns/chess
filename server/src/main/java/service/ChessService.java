@@ -3,6 +3,7 @@ package service;
 import dataaccess.DataAccessException;
 import dataaccess.MySqlDataAccess;
 import model.*;
+import org.mindrot.jbcrypt.BCrypt;
 
 import java.util.Objects;
 
@@ -30,7 +31,7 @@ public class ChessService {
 
     public Authtoken login(LoginRequest login) throws DataAccessException{
         User user = dataAccess.getUser(login.username());
-        if (user == null || !Objects.equals(user.password(), login.password())){
+        if (user == null || !BCrypt.checkpw(login.password(), user.password())){
             return null;
         }
         return dataAccess.createAuth(user.username());

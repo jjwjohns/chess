@@ -15,7 +15,7 @@ public class ServiceTests {
     private static final CreateRequest CREATE_REQUEST = new CreateRequest("test");
     private static final JoinRequest JOIN_REQUEST = new JoinRequest(ChessGame.TeamColor.WHITE, 1);
 
-    @AfterEach
+    @BeforeEach
     void clearData() throws Exception {
         SERVICE.clear();
     }
@@ -40,7 +40,7 @@ public class ServiceTests {
     public void testRegisterPositive() throws Exception {
         SERVICE.register(USER);
 
-        Assertions.assertEquals(ACCESS.getUser("user"), USER);
+        Assertions.assertEquals(ACCESS.getUser("user").username(), USER.username());
     }
 
     @Test

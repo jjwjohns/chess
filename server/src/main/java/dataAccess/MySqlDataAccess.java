@@ -23,9 +23,10 @@ public class MySqlDataAccess {
     //    User methods
     public void createUser(User user) throws DataAccessException{
         var statement = "INSERT INTO users (username, email, password, json) VALUES (?, ?, ?, ?)";
-        var json = new Gson().toJson(user);
         String hashedPassword = BCrypt.hashpw(user.password(), BCrypt.gensalt());
-        executeUpdate(statement, user.username(), hashedPassword, user.password(), json);
+        User newUser = user.updatePassword(hashedPassword);
+        var json = new Gson().toJson(newUser);
+        executeUpdate(statement, user.username(), user.email(), hashedPassword, json);
     }
 
     public User getUser(String user) throws DataAccessException{

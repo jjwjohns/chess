@@ -3,6 +3,10 @@ package model;
 import java.util.Objects;
 
 public record User(String username, String password, String email) {
+    public User updatePassword(String password) {
+        return new User(this.username, password, this.email);
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
