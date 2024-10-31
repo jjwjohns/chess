@@ -8,6 +8,7 @@ import org.mindrot.jbcrypt.BCrypt;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.UUID;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
@@ -17,10 +18,6 @@ import static java.sql.Types.NULL;
 public class MySqlDataAccess {
     public MySqlDataAccess() throws DataAccessException {
         configureDatabase();
-    }
-
-    public boolean authorize(String token) throws DataAccessException{
-        return getAuth(token) != null;
     }
 
     //    User methods
@@ -53,6 +50,10 @@ public class MySqlDataAccess {
     }
 
     //    Auth methods
+    public boolean authorize(String token) throws DataAccessException{
+        return getAuth(token) != null;
+    }
+
     public Authtoken createAuth (String username) throws DataAccessException{
         String token = UUID.randomUUID().toString();
         Authtoken auth = new Authtoken(token, username);
@@ -128,12 +129,22 @@ public class MySqlDataAccess {
         return null;
     }
 
-    public void deleteGame(Integer gameID) throws DataAccessException{
-        throw new DataAccessException("not implemented");
-    }
-
     public ListResult listGames() throws DataAccessException{
-        throw new DataAccessException("not implemented");
+        var result = new ArrayList<Game>();
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT json FROM games";
+            try (var ps = conn.prepareStatement(statement)) {
+                try (var rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        result.add(readJson(rs, Game.class));
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+        }
+        ListResult list = new ListResult(result);
+        return list;
     }
 
     public void joinGame(String username, JoinRequest request) throws DataAccessException {
@@ -174,6 +185,7 @@ public class MySqlDataAccess {
     }
 
 
+//    deserialization
     private <T> T readJson(ResultSet rs, Class<T> cla) throws DataAccessException {
         String json;
         try {
@@ -185,7 +197,7 @@ public class MySqlDataAccess {
     }
 
 
-
+//SQL
     private int executeUpdate(String statement, Object... params) throws DataAccessException {
         try (var conn = DatabaseManager.getConnection()) {
             try (var ps = conn.prepareStatement(statement, RETURN_GENERATED_KEYS)) {
