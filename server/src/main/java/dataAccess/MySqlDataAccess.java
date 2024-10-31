@@ -7,6 +7,7 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.SQLException;
 import java.util.UUID;
 
 import static java.sql.Statement.RETURN_GENERATED_KEYS;
@@ -99,9 +100,9 @@ public class MySqlDataAccess {
         var statement = "INSERT INTO games (whiteusername, blackusername, gamename, json) VALUES (?, ?, ?, ?)";
         Game game = new Game(0, null, null, gameName, new ChessGame());
         var json = new Gson().toJson(game);
-        System.out.println("Executing: " + statement + " with values: " + game.whiteUsername() + ", " + game.blackUsername() + ", " + game.gameName() + ", " + json);
         var id = executeUpdate(statement, game.whiteUsername(), game.blackUsername(), game.gameName(), json);
 
+//        update game json
         Game game1 = new Game(id, null, null, gameName, new ChessGame());
         var json1 = new Gson().toJson(game1);
         var updateStatement = "UPDATE games SET json = ? WHERE id = ?";
@@ -110,16 +111,11 @@ public class MySqlDataAccess {
         return new CreateResult(id);
     }
 
-//    Game game1 = new Game(id, null, null, gameName, new ChessGame());
-//    var statement2 = "ALTER TABLE games WHERE AUTO_INCREMENT = 1";
-//    executeUpdate(statement2);
-
     public Game getGame(int gameID) throws DataAccessException{
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT json FROM games WHERE id=?";
             try (var ps = conn.prepareStatement(statement)) {
                 ps.setInt(1, gameID);
-                System.out.println("Executing: " + statement);
                 try (var rs = ps.executeQuery()) {
                     if (rs.next()) {
                         return readJson(rs, Game.class);
@@ -141,7 +137,22 @@ public class MySqlDataAccess {
     }
 
     public void joinGame(String username, JoinRequest request) throws DataAccessException {
-        throw new DataAccessException("not implemented");
+        String updateStatement;
+        Game game = getGame(request.gameID());
+        if (request.playerColor() == ChessGame.TeamColor.WHITE){
+            updateStatement = "UPDATE games SET whiteusername = ? WHERE id = ?";
+            game = game.updateWhiteUsername(username);
+        }
+        else {
+            updateStatement = "UPDATE games SET blackusername = ? WHERE id = ?";
+            game = game.updateBlackUsername(username);
+        }
+        executeUpdate(updateStatement, username, request.gameID());
+
+//        update game json
+        var json = new Gson().toJson(game);
+        var jsonUpdateStatement = "UPDATE games SET json = ? WHERE id = ?";
+        executeUpdate(jsonUpdateStatement, json, game.gameID());
     }
 
     //    clear methods

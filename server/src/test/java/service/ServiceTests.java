@@ -130,7 +130,7 @@ public class ServiceTests {
         SERVICE.joinGame(JOIN_REQUEST, auth.authToken());
         Game game = ACCESS.getGame(createResult.gameID());
 
-        Assertions.assertSame("user", game.whiteUsername());
+        Assertions.assertEquals("user", game.whiteUsername());
     }
 
     @Test
