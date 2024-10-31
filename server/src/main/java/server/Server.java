@@ -1,14 +1,14 @@
 package server;
 
 import chess.ChessGame;
-import dataaccess.DataMemory;
+import dataaccess.MySqlDataAccess;
 import model.*;
 import service.ChessService;
 import spark.*;
 import com.google.gson.Gson;
 
 public class Server {
-    public DataMemory dataAccess = new DataMemory();
+    public MySqlDataAccess dataAccess = new MySqlDataAccess();
     public ChessService service = new ChessService(dataAccess);
 
     public int run(int desiredPort) {

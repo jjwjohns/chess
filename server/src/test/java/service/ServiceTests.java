@@ -1,14 +1,14 @@
 package service;
 
 import chess.ChessGame;
-import dataaccess.DataMemory;
+import dataaccess.MySqlDataAccess;
 import model.*;
 import org.junit.jupiter.api.*;
 import server.Server;
 
 public class ServiceTests {
     private static final Server SERVER = new Server();
-    private static final DataMemory ACCESS = SERVER.dataAccess;
+    private static final MySqlDataAccess ACCESS = SERVER.dataAccess;
     private static final ChessService SERVICE = SERVER.service;
     private static final User USER = new User("user", "password", "email");
     private static final LoginRequest LOGIN_REQUEST = new LoginRequest("user", "password");

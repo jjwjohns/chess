@@ -1,15 +1,15 @@
 package service;
 
 import dataaccess.DataAccessException;
-import dataaccess.DataMemory;
+import dataaccess.MySqlDataAccess;
 import model.*;
 
 import java.util.Objects;
 
 public class ChessService {
-    private final DataMemory dataAccess;
+    private final MySqlDataAccess dataAccess;
 
-    public ChessService(DataMemory dataAccess){
+    public ChessService(MySqlDataAccess dataAccess){
         this.dataAccess = dataAccess;
     }
 
