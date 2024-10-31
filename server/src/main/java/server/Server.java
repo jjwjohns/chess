@@ -1,6 +1,7 @@
 package server;
 
 import chess.ChessGame;
+import dataaccess.DataAccessException;
 import dataaccess.MySqlDataAccess;
 import model.*;
 import service.ChessService;
@@ -8,7 +9,15 @@ import spark.*;
 import com.google.gson.Gson;
 
 public class Server {
-    public MySqlDataAccess dataAccess = new MySqlDataAccess();
+    public MySqlDataAccess dataAccess;
+    {
+        try {
+            dataAccess = new MySqlDataAccess();
+        } catch (DataAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     public ChessService service = new ChessService(dataAccess);
 
     public int run(int desiredPort) {
