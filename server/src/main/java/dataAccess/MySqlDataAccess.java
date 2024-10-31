@@ -168,17 +168,23 @@ public class MySqlDataAccess {
     }
 
     //    clear methods
-    public void deleteAuths() throws DataAccessException {
+    public void clear() throws DataAccessException {
+        deleteGames();
+        deleteAuths();
+        deleteUsers();
+    }
+
+    private void deleteAuths() throws DataAccessException {
         var statement = "DELETE from auths";
         executeUpdate(statement);
     }
 
-    public void deleteUsers() throws DataAccessException {
+    private void deleteUsers() throws DataAccessException {
         var statement = "DELETE from users";
         executeUpdate(statement);
     }
 
-    public void deleteGames() throws DataAccessException {
+    private void deleteGames() throws DataAccessException {
         var statement = "DELETE from games";
         executeUpdate(statement);
         var statement2 = "ALTER TABLE games AUTO_INCREMENT = 1";

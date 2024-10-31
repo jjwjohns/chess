@@ -24,9 +24,7 @@ public class ChessService {
     }
 
     public void clear() throws DataAccessException{
-        dataAccess.deleteGames();
-        dataAccess.deleteAuths();
-        dataAccess.deleteUsers();
+        dataAccess.clear();
     }
 
     public Authtoken login(LoginRequest login) throws DataAccessException{
