@@ -7,7 +7,6 @@ import org.mindrot.jbcrypt.BCrypt;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -56,6 +55,9 @@ public class MySqlDataAccess {
     }
 
     public Authtoken createAuth (String username) throws DataAccessException{
+        if (username == null){
+            throw new DataAccessException("username cannot be null");
+        }
         String token = UUID.randomUUID().toString();
         Authtoken auth = new Authtoken(token, username);
         var statement = "INSERT INTO auths (authtoken, username, json) VALUES (?, ?, ?)";
@@ -86,6 +88,9 @@ public class MySqlDataAccess {
     }
 
     public void deleteAuth(Authtoken auth) throws DataAccessException{
+        if (auth.authToken() == null){
+            throw new DataAccessException("Authtoken can't be null");
+        }
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "DELETE FROM auths WHERE authtoken = ?";
             try (var ps = conn.prepareStatement(statement)) {
@@ -253,7 +258,7 @@ public class MySqlDataAccess {
                     """
             CREATE TABLE IF NOT EXISTS  auths (
               `authtoken` varchar(256) NOT NULL,
-              `username` varchar(256),
+              `username` varchar(256) NOT NULL,
               `json` json NOT NULL,
               PRIMARY KEY (`authtoken`),
               FOREIGN KEY (`username`) REFERENCES users(`username`)

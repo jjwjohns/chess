@@ -105,7 +105,6 @@ public class ServiceTests {
 
     @Test
     public void testListPositive() throws Exception {
-        SERVICE.clear();
         SERVICE.createGame(CREATE_REQUEST);
         SERVICE.createGame(CREATE_REQUEST);
         ListResult listResult = SERVICE.listGames();
@@ -116,7 +115,6 @@ public class ServiceTests {
 
     @Test
     public void testListNegative() throws Exception {
-        SERVICE.clear();
         ListResult listResult = SERVICE.listGames();
 
         Assertions.assertTrue(listResult.games().isEmpty());
@@ -142,7 +140,6 @@ public class ServiceTests {
         Assertions.assertThrows(NullPointerException.class, () -> {
             SERVICE.joinGame(JOIN_REQUEST, "badtoken");
         });
-
     }
 }
 
