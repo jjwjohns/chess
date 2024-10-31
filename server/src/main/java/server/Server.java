@@ -14,10 +14,7 @@ public class Server {
     public int run(int desiredPort) {
         Spark.port(desiredPort);
 
-//        Spark.staticFiles.externalLocation("src/resources/web");
-//        Spark.staticFiles.location("public");
-
-        Spark.get("/", (req, res) -> "CS 240 Chess Server Web API");
+        Spark.staticFiles.location("web");
         Spark.post("/user", this::register);
         Spark.delete("/db", this::clear);
         Spark.post("/session", this::login);
