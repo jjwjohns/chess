@@ -90,7 +90,7 @@ public class ServiceTests {
         Assertions.assertNotNull(result);
         Game game = ACCESS.getGame(result.gameID());
 
-        Assertions.assertSame(game.gameName(), "test");
+        Assertions.assertEquals(game.gameName(), "test");
     }
 
     @Test
@@ -100,7 +100,7 @@ public class ServiceTests {
         Game game1 = ACCESS.getGame(result1.gameID());
         Game game2 = ACCESS.getGame(result2.gameID());
 
-        Assertions.assertNotSame(game1.gameID(), game2.gameID());
+        Assertions.assertNotEquals(game1.gameID(), game2.gameID());
     }
 
     @Test

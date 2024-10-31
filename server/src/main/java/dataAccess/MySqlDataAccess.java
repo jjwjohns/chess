@@ -97,14 +97,39 @@ public class MySqlDataAccess {
     //    Game methods
     public CreateResult addGame(String gameName) throws DataAccessException {
         var statement = "INSERT INTO games (whiteusername, blackusername, gamename, json) VALUES (?, ?, ?, ?)";
-        Game game = new Game(1, null, null, gameName, new ChessGame());
+        Game game = new Game(0, null, null, gameName, new ChessGame());
         var json = new Gson().toJson(game);
+        System.out.println("Executing: " + statement + " with values: " + game.whiteUsername() + ", " + game.blackUsername() + ", " + game.gameName() + ", " + json);
         var id = executeUpdate(statement, game.whiteUsername(), game.blackUsername(), game.gameName(), json);
+
+        Game game1 = new Game(id, null, null, gameName, new ChessGame());
+        var json1 = new Gson().toJson(game1);
+        var updateStatement = "UPDATE games SET json = ? WHERE id = ?";
+        executeUpdate(updateStatement, json1, id);
+
         return new CreateResult(id);
     }
 
+//    Game game1 = new Game(id, null, null, gameName, new ChessGame());
+//    var statement2 = "ALTER TABLE games WHERE AUTO_INCREMENT = 1";
+//    executeUpdate(statement2);
+
     public Game getGame(int gameID) throws DataAccessException{
-        throw new DataAccessException("not implemented");
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT json FROM games WHERE id=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setInt(1, gameID);
+                System.out.println("Executing: " + statement);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return readJson(rs, Game.class);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+        }
+        return null;
     }
 
     public void deleteGame(Integer gameID) throws DataAccessException{
@@ -133,6 +158,8 @@ public class MySqlDataAccess {
     public void deleteGames() throws DataAccessException {
         var statement = "DELETE from games";
         executeUpdate(statement);
+        var statement2 = "ALTER TABLE games AUTO_INCREMENT = 1";
+        executeUpdate(statement2);
     }
 
 
@@ -218,36 +245,3 @@ public class MySqlDataAccess {
         }
     }
 }
-
-
-
-
-//            """
-//            CREATE TABLE IF NOT EXISTS  users (
-//              `id` int NOT NULL AUTO_INCREMENT,
-//              `username` varchar(256) NOT NULL,
-//              `password` varchar(256) NOT NULL,
-//              `email` varchar(256) NOT NULL,
-//              PRIMARY KEY (`id`)
-//            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-//            """,
-//                    """
-//            CREATE TABLE IF NOT EXISTS  games (
-//              `id` int NOT NULL AUTO_INCREMENT,
-//              `whiteusername` int NOT NULL,
-//              `blackusername` int NOT NULL,
-//              `gamename` varchar(256) NOT NULL,
-//              PRIMARY KEY (`id`),
-//              FOREIGN KEY (`whiteusername`) REFERENCES users(`id`),
-//              FOREIGN KEY (`blackusername`) REFERENCES users(`id`)
-//            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-//            """,
-//                    """
-//            CREATE TABLE IF NOT EXISTS  auths (
-//              `id` int NOT NULL AUTO_INCREMENT,
-//              `authtoken` varchar(256) NOT NULL,
-//              `username` int NOT NULL,
-//              PRIMARY KEY (`id`),
-//              FOREIGN KEY (`username`) REFERENCES users(`id`)
-//            ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
-//            """
