@@ -30,6 +30,7 @@ public class MySqlDataAccess {
     }
 
     public User getUser(String user) throws DataAccessException{
+
         try (var conn = DatabaseManager.getConnection()) {
             var statement = "SELECT json FROM users WHERE username=?";
             try (var ps = conn.prepareStatement(statement)) {
@@ -38,6 +39,9 @@ public class MySqlDataAccess {
                     if (rs.next()) {
                         return readJson(rs);
                     }
+//                    else {
+//                        throw new DataAccessException("User not found: " + user);
+//                    }
                 }
             }
         } catch (Exception e) {
@@ -52,7 +56,11 @@ public class MySqlDataAccess {
         Authtoken auth = new Authtoken(token, username);
         var statement = "INSERT INTO auths (authtoken, username, json) VALUES (?, ?, ?)";
         var json = new Gson().toJson(auth);
-        executeUpdate(statement, token, username, json);
+        try {
+            executeUpdate(statement, token, username, json);
+        } catch (DataAccessException e) {
+            throw e;
+        }
         return auth;
     }
 

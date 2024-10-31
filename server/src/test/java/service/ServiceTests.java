@@ -1,6 +1,7 @@
 package service;
 
 import chess.ChessGame;
+import dataaccess.DataAccessException;
 import dataaccess.MySqlDataAccess;
 import model.*;
 import org.junit.jupiter.api.*;
@@ -22,7 +23,6 @@ public class ServiceTests {
 
     @Test
     public void testClearPositive() throws Exception {
-        ACCESS.createAuth("username");
         ACCESS.createUser(USER);
         SERVICE.clear();
 
@@ -41,7 +41,7 @@ public class ServiceTests {
     public void testRegisterPositive() throws Exception {
         SERVICE.register(USER);
 
-        Assertions.assertSame(ACCESS.getUser("user"), USER);
+        Assertions.assertEquals(ACCESS.getUser("user"), USER);
     }
 
     @Test
@@ -56,7 +56,7 @@ public class ServiceTests {
         SERVICE.register(USER);
         Authtoken auth = SERVICE.login(LOGIN_REQUEST);
 
-        Assertions.assertSame(LOGIN_REQUEST.username(), auth.username());
+        Assertions.assertEquals(LOGIN_REQUEST.username(), auth.username());
     }
 
     @Test
