@@ -21,18 +21,3 @@ public class Main {
         }
     }
 }
-
-
-//        DatabaseManager.createDatabase();
-//        try (var conn = DatabaseManager.getConnection()) {
-//            try (var preparedStatement = conn.prepareStatement("SELECT 1+1")) {
-//                var rs = preparedStatement.executeQuery();
-//                rs.next();
-//                System.out.println(rs.getInt(1));
-//            }
-//            catch (Exception e){
-//                throw new DataAccessException("bad");
-//            }
-//        } catch (SQLException e) {
-//            throw new RuntimeException(e);
-//        }
