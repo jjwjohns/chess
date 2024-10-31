@@ -1,5 +1,6 @@
 package dataaccess;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import model.*;
 import org.mindrot.jbcrypt.BCrypt;
@@ -95,7 +96,11 @@ public class MySqlDataAccess {
 
     //    Game methods
     public CreateResult addGame(String gameName) throws DataAccessException {
-        throw new DataAccessException("not implemented");
+        var statement = "INSERT INTO games (whiteusername, blackusername, gamename, json) VALUES (?, ?, ?, ?)";
+        Game game = new Game(1, null, null, gameName, new ChessGame());
+        var json = new Gson().toJson(game);
+        var id = executeUpdate(statement, game.whiteUsername(), game.blackUsername(), game.gameName(), json);
+        return new CreateResult(id);
     }
 
     public Game getGame(int gameID) throws DataAccessException{
@@ -182,7 +187,7 @@ public class MySqlDataAccess {
               `whiteusername` varchar(256),
               `blackusername` varchar(256),
               `gamename` varchar(256) NOT NULL,
-              `game` json NOT NULL,
+              `json` json NOT NULL,
               PRIMARY KEY (`id`),
               FOREIGN KEY (`whiteusername`) REFERENCES users(`username`),
               FOREIGN KEY (`blackusername`) REFERENCES users(`username`)
