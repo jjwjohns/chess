@@ -1,12 +1,15 @@
-package service;
+package dataAccess;
 
 import chess.ChessGame;
 import dataaccess.MySqlDataAccess;
 import model.*;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 import server.Server;
+import service.ChessService;
 
-public class ServiceTests {
+public class DataAccessTests {
     private static final Server SERVER = new Server();
     private static final MySqlDataAccess ACCESS = SERVER.dataAccess;
     private static final ChessService SERVICE = SERVER.service;
@@ -145,5 +148,3 @@ public class ServiceTests {
 
     }
 }
-
-

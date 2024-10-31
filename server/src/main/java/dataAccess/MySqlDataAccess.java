@@ -18,7 +18,7 @@ public class MySqlDataAccess {
     }
 
     public boolean authorize(String token) throws DataAccessException{
-        throw new DataAccessException("not implemented");
+        return getAuth(token) != null;
     }
 
     //    User methods
@@ -37,7 +37,7 @@ public class MySqlDataAccess {
                 ps.setString(1, user);
                 try (var rs = ps.executeQuery()) {
                     if (rs.next()) {
-                        return readJson(rs);
+                        return readJson(rs, User.class);
                     }
 //                    else {
 //                        throw new DataAccessException("User not found: " + user);
@@ -65,11 +65,32 @@ public class MySqlDataAccess {
     }
 
     public Authtoken getAuth(String auth) throws DataAccessException{
-        throw new DataAccessException("not implemented");
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "SELECT json FROM auths WHERE authtoken=?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, auth);
+                try (var rs = ps.executeQuery()) {
+                    if (rs.next()) {
+                        return readJson(rs, Authtoken.class);
+                    }
+                }
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+        }
+        return null;
     }
 
     public void deleteAuth(Authtoken auth) throws DataAccessException{
-        throw new DataAccessException("not implemented");
+        try (var conn = DatabaseManager.getConnection()) {
+            var statement = "DELETE FROM auths WHERE authtoken = ?";
+            try (var ps = conn.prepareStatement(statement)) {
+                ps.setString(1, auth.authToken());
+                ps.executeUpdate();
+            }
+        } catch (Exception e) {
+            throw new DataAccessException(String.format("Unable to read data: %s", e.getMessage()));
+        }
     }
 
     //    Game methods
@@ -110,14 +131,14 @@ public class MySqlDataAccess {
     }
 
 
-    private User readJson(ResultSet rs) throws DataAccessException {
-        String json = null;
+    private <T> T readJson(ResultSet rs, Class<T> cla) throws DataAccessException {
+        String json;
         try {
             json = rs.getString("json");
         } catch (SQLException e) {
-            throw new RuntimeException(e);
+            throw new DataAccessException("Error reading JSON from ResultSet");
         }
-        return new Gson().fromJson(json, User.class);
+        return new Gson().fromJson(json, cla);
     }
 
 
@@ -169,11 +190,10 @@ public class MySqlDataAccess {
             """,
                     """
             CREATE TABLE IF NOT EXISTS  auths (
-              `id` int NOT NULL AUTO_INCREMENT,
               `authtoken` varchar(256) NOT NULL,
               `username` varchar(256),
               `json` json NOT NULL,
-              PRIMARY KEY (`id`),
+              PRIMARY KEY (`authtoken`),
               FOREIGN KEY (`username`) REFERENCES users(`username`)
             ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci
             """
