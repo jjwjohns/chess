@@ -50,7 +50,7 @@ public class MySqlDataAccess {
     public Authtoken createAuth (String username) throws DataAccessException{
         String token = UUID.randomUUID().toString();
         Authtoken auth = new Authtoken(token, username);
-        var statement = "INSERT INTO auths (token, username, json) VALUES (?, ?, ?)";
+        var statement = "INSERT INTO auths (authtoken, username, json) VALUES (?, ?, ?)";
         var json = new Gson().toJson(auth);
         executeUpdate(statement, token, username, json);
         return auth;
@@ -87,17 +87,17 @@ public class MySqlDataAccess {
 
     //    clear methods
     public void deleteAuths() throws DataAccessException {
-        var statement = "DELETE auths";
+        var statement = "DELETE from auths";
         executeUpdate(statement);
     }
 
     public void deleteUsers() throws DataAccessException {
-        var statement = "DELETE users";
+        var statement = "DELETE from users";
         executeUpdate(statement);
     }
 
     public void deleteGames() throws DataAccessException {
-        var statement = "DELETE games";
+        var statement = "DELETE from games";
         executeUpdate(statement);
     }
 
