@@ -1,6 +1,6 @@
 package UI;
 
 public enum State {
-    LOGGEDDOUT,
+    LOGGEDOUT,
     LOGGEDIN
 }

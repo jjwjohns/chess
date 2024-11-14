@@ -1,15 +1,19 @@
 package UI;
 
-import model.Authtoken;
+import chess.ChessGame;
+import model.*;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.Objects;
 
 public class ChessClient {
     private final ServerFacade server;
     private final String serverUrl;
     private final Repl repl;
-    private State state = State.LOGGEDDOUT;
+    private State state = State.LOGGEDOUT;
     private Authtoken auth;
+    private List<Game> list;
 
     public ChessClient(String serverUrl, Repl repl) {
         server = new ServerFacade(serverUrl);
@@ -23,7 +27,7 @@ public class ChessClient {
             var tokens = input.toLowerCase().split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
-            if (state == State.LOGGEDDOUT){
+            if (state == State.LOGGEDOUT){
                 return switch (cmd) {
                     case "quit" -> "quit";
                     case "register" -> register(params);
@@ -37,6 +41,7 @@ public class ChessClient {
                     case "logout" -> logout();
                     case "create" -> create(params);
                     case "list" -> list();
+                    case "play" -> play(params);
                     default -> help();
                 };
             }
@@ -65,20 +70,59 @@ public class ChessClient {
 
     private String logout() throws Exception{
         server.logout(auth);
-        state = State.LOGGEDDOUT;
+        state = State.LOGGEDOUT;
         return "successfully logged out";
     }
 
     private String create(String... params) throws Exception{
-        return server.create(auth, params);
+        if (params.length >= 1){
+            server.create(auth, params);
+            return "game created";
+        }
+        throw new Exception("create failed");
     }
 
     private String list() throws Exception {
-        return server.list(auth);
+        ListResult result = server.list(auth);
+        list = result.games();
+        StringBuilder compiled = new StringBuilder();
+        for (int i = 1; i <= list.size(); i++){
+            compiled.append(i);
+            compiled.append(": Game Name: ");
+            compiled.append(list.get(i-1).gameName());
+            compiled.append(", White Player: ");
+            compiled.append(list.get(i-1).whiteUsername());
+            compiled.append(", Black Player: ");
+            compiled.append(list.get(i-1).blackUsername());
+            compiled.append("\n");
+        }
+        return compiled.toString();
+    }
+
+    private String play(String... params) throws Exception{
+        if (params.length >= 2){
+
+            ChessGame.TeamColor color;
+            if (Objects.equals(params[1], "WHITE")){
+                color = ChessGame.TeamColor.WHITE;
+            }
+            else if (Objects.equals(params[1], "BLACK")){
+                color = ChessGame.TeamColor.BLACK;
+            }
+            else {
+                throw new Exception("color must be BLACK or WHITE");
+            }
+
+            int index = Integer.parseInt(params[0]);
+            int ID = list.get(index).gameID();
+            server.play(auth, ID, color);
+            return "joined game successfully";
+        }
+        throw new Exception("play failed");
     }
 
     public String help() {
-        if (state == State.LOGGEDDOUT){
+        if (state == State.LOGGEDOUT){
             return """
                 - register <USERNAME> <PASSWORD> <EMAIL> - creates account
                 - login <USERNAME> <PASSWORD> - logs in
@@ -90,7 +134,7 @@ public class ChessClient {
                 - logout - exits when you are done
                 - create <GAMENAME> - creates a game
                 - list - lists all active games
-                - join <GAMEID> <WHITE|BLACK> - joins a game according to ID
+                - play <GAMEID> <WHITE|BLACK> - joins a game according to ID
                 - observe <GAMEID> - observe active game
                 - quit - exits
                 - help - displays possible commands

@@ -1,9 +1,10 @@
 package UI;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
 import model.Authtoken;
 import model.LoginRequest;
-import model.User;
+import model.*;
 
 import java.io.*;
 import java.net.*;
@@ -41,15 +42,22 @@ public class ServerFacade {
         this.makeRequest("DELETE", path, null, auth.authToken(), null);
     }
 
-    public String create(Authtoken auth, String... params) {
-//        var path = "/game";
-//        String gamename = params[0];
-//        this.makeRequest("POST", )
-        return "create not implemented";
+    public void create(Authtoken auth, String... params) throws Exception {
+        var path = "/game";
+        String gamename = params[0];
+        CreateRequest request = new CreateRequest(gamename);
+        this.makeRequest("POST", path, request, auth.authToken(), null);
     }
 
-    public String list(Authtoken auth) {
-        return "list not implemented";
+    public ListResult list(Authtoken auth) throws Exception {
+        var path = "/game";
+        return this.makeRequest("GET", path, null, auth.authToken(), ListResult.class);
+    }
+
+    public void play(Authtoken auth, int ID, ChessGame.TeamColor color) throws Exception {
+        var path = "/game";
+        JoinRequest request = new JoinRequest(color, ID);
+        this.makeRequest("PUT", path, request, auth.authToken(), null);
     }
 
     private <T> T makeRequest(String method, String path, Object request, String authtoken, Class<T> responseClass) throws Exception {
@@ -105,6 +113,7 @@ public class ServerFacade {
     private boolean isSuccessful(int status) {
         return status / 100 == 2;
     }
+
 }
 //    public Pet addPet(Pet pet) throws ResponseException {
 //        var path = "/pet";

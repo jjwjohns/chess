@@ -13,11 +13,6 @@ public class ServerFacadeTests {
 
     private static Server SERVER;
     private static ServerFacade FACADE;
-    private static final User USER = new User("user", "password", "email");
-    private static final User BADUSER = new User(null, null, null);
-    private static final LoginRequest LOGIN_REQUEST = new LoginRequest("user", "password");
-    private static final CreateRequest CREATE_REQUEST = new CreateRequest("test");
-    private static final JoinRequest JOIN_REQUEST = new JoinRequest(ChessGame.TeamColor.WHITE, 1);
 
     @BeforeAll
     public static void init() throws DataAccessException {
@@ -72,6 +67,31 @@ public class ServerFacadeTests {
     @Test
     public void logoutNegativeTest() throws Exception {
     Assertions.assertThrows(Exception.class, () -> FACADE.logout(new Authtoken("badtoken", "baduser")));
+    }
+
+    @Test
+    public void createPositiveTest() throws Exception {
+        Authtoken auth = FACADE.register("user", "password", "email");
+        Assertions.assertDoesNotThrow(() -> FACADE.create(auth, "gamename"));
+    }
+
+    @Test
+    public void createNegativeTest() throws Exception {
+        Assertions.assertThrows(Exception.class, () -> FACADE.create(new Authtoken("badtoken", "baduser")));
+    }
+
+    @Test
+    public void listPositiveTest() throws Exception {
+        Authtoken auth = FACADE.register("user", "password", "email");
+        FACADE.create(auth, "game1");
+        FACADE.create(auth, "game2");
+        ListResult result = FACADE.list(auth);
+        Assertions.assertEquals(2, result.games().size());
+    }
+
+    @Test
+    public void listNegativeTest() throws Exception {
+        Assertions.assertThrows(Exception.class, () -> FACADE.list(new Authtoken("badtoken", "baduser")));
     }
 
 }
