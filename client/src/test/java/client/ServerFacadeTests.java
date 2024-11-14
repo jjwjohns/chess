@@ -32,7 +32,6 @@ public class ServerFacadeTests {
         SERVER.stop();
     }
 
-
     @Test
     public void registerPositiveTest() throws Exception {
         Authtoken auth = FACADE.register("user", "password", "email");

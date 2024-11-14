@@ -42,6 +42,7 @@ public class ChessClient {
                     case "create" -> create(params);
                     case "list" -> list();
                     case "play" -> play(params);
+                    case "observe" -> observe(params);
                     default -> help();
                 };
             }
@@ -119,6 +120,15 @@ public class ChessClient {
             return "Joined game successfully";
         }
         throw new Exception("play failed");
+    }
+
+    private String observe(String... params) throws Exception{
+        if (params.length >= 1){
+            int index = Integer.parseInt(params[0])-1;
+            int ID = list.get(index).gameID();
+            return server.observe(ID);
+        }
+        throw new Exception("observe failed");
     }
 
     public String help() {
