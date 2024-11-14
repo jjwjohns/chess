@@ -9,6 +9,7 @@ public class ChessClient {
     private final String serverUrl;
     private final Repl repl;
     private State state = State.LOGGEDDOUT;
+    private Authtoken auth;
 
     public ChessClient(String serverUrl, Repl repl) {
         server = new ServerFacade(serverUrl);
@@ -22,12 +23,20 @@ public class ChessClient {
             var tokens = input.toLowerCase().split(" ");
             var cmd = (tokens.length > 0) ? tokens[0] : "help";
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
-            return switch (cmd) {
-                case "quit" -> "quit";
-                case "register" -> register(params);
-                case "login" -> login(params);
-                default -> help();
-            };
+            if (state == State.LOGGEDDOUT){
+                return switch (cmd) {
+                    case "quit" -> "quit";
+                    case "register" -> register(params);
+                    case "login" -> login(params);
+                    default -> help();
+                };
+            }
+            else {
+                return switch (cmd) {
+                    case "quit" -> "quit";
+                    default -> help();
+                };
+            }
         } catch (Exception ex) {
             return ex.getMessage();
         }
@@ -35,25 +44,38 @@ public class ChessClient {
 
     public String register (String... params) throws Exception {
         if (params.length >=3){
-            Authtoken result = server.register(params);
-            return result.authToken();
+            this.auth = server.register(params);
+            state = State.LOGGEDIN;
+            return "successfully registered";
         }
         throw new Exception("register failed");
     }
 
     public String login(String... params) throws Exception {
         if (params.length >=2){
-            Authtoken result = server.login(params);
-            return result.authToken();
+            this.auth = server.login(params);
+            state = State.LOGGEDIN;
+            return "successfully logged in";
         }
         throw new Exception("register failed");
     }
 
     public String help() {
-        return """
+        if (state == State.LOGGEDDOUT){
+            return """
                 - register <USERNAME> <PASSWORD> <EMAIL> - creates account
                 - login <USERNAME> <PASSWORD> - logs in
-                - quit - exits out
+                - quit - exits
+                - help - displays possible commands
+                """;
+        }
+        return """
+                - logout - exits when you are done
+                - create <GAMENAME> - creates a game
+                - list - lists all active games
+                - join <GAMEID> <WHITE|BLACK> - joins a game according to ID
+                - observe <GAMEID> - observe active game
+                - quit - exits
                 - help - displays possible commands
                 """;
     }
