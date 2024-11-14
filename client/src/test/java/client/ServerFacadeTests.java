@@ -17,9 +17,9 @@ public class ServerFacadeTests {
     @BeforeAll
     public static void init() throws DataAccessException {
         SERVER = new Server();
-        var port = SERVER.run(8080);
+        var port = SERVER.run(8081);
         System.out.println("Started test HTTP SERVER on " + port);
-        FACADE = new ServerFacade("http://localhost:8080");
+        FACADE = new ServerFacade("http://localhost:8081");
     }
 
     @BeforeEach
@@ -94,4 +94,17 @@ public class ServerFacadeTests {
         Assertions.assertThrows(Exception.class, () -> FACADE.list(new Authtoken("badtoken", "baduser")));
     }
 
+    @Test
+    public void playPositiveTest() throws Exception {
+        Authtoken auth = FACADE.register("user", "password", "email");
+        FACADE.create(auth, "game1");
+        Assertions.assertDoesNotThrow(() -> FACADE.play(auth, 1, ChessGame.TeamColor.BLACK));
+    }
+
+    @Test
+    public void playNegativeTest() throws Exception {
+        Authtoken auth = FACADE.register("user", "password", "email");
+        FACADE.create(auth, "game1");
+        Assertions.assertThrows(Exception.class, () -> FACADE.play(auth, 5, ChessGame.TeamColor.BLACK));
+    }
 }

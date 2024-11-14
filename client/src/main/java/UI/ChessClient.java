@@ -103,20 +103,20 @@ public class ChessClient {
         if (params.length >= 2){
 
             ChessGame.TeamColor color;
-            if (Objects.equals(params[1], "WHITE")){
+            if (params[1].toLowerCase().contains("white")){
                 color = ChessGame.TeamColor.WHITE;
             }
-            else if (Objects.equals(params[1], "BLACK")){
+            else if (params[1].toLowerCase().contains("black")){
                 color = ChessGame.TeamColor.BLACK;
             }
             else {
                 throw new Exception("color must be BLACK or WHITE");
             }
 
-            int index = Integer.parseInt(params[0]);
+            int index = Integer.parseInt(params[0])-1;
             int ID = list.get(index).gameID();
             server.play(auth, ID, color);
-            return "joined game successfully";
+            return "Joined game successfully";
         }
         throw new Exception("play failed");
     }
