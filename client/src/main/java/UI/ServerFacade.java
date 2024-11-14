@@ -1,7 +1,8 @@
-package client;
+package UI;
 
 import com.google.gson.Gson;
 import model.Authtoken;
+import model.LoginRequest;
 import model.User;
 
 import java.io.*;
@@ -22,6 +23,14 @@ public class ServerFacade {
         String email = params[2];
         User user = new User(username, pass, email);
         return this.makeRequest("POST", path, user, Authtoken.class);
+    }
+
+    public Authtoken login(String[] params) throws Exception {
+        var path = "/session";
+        String username = params[0];
+        String pass = params[1];
+        LoginRequest login = new LoginRequest(username, pass);
+        return this.makeRequest("POST", path, login, Authtoken.class);
     }
 
 
@@ -54,7 +63,7 @@ public class ServerFacade {
     private void throwIfNotSuccessful(HttpURLConnection http) throws Exception {
         var status = http.getResponseCode();
         if (!isSuccessful(status)) {
-            throw new Exception("http failure");
+            throw new Exception("http failure:" + status);
         }
     }
 

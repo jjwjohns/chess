@@ -1,4 +1,4 @@
-package client;
+package UI;
 
 public enum State {
     LOGGEDDOUT,

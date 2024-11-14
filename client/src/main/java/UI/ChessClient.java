@@ -1,4 +1,6 @@
-package client;
+package UI;
+
+import model.Authtoken;
 
 import java.util.Arrays;
 
@@ -23,6 +25,7 @@ public class ChessClient {
             return switch (cmd) {
                 case "quit" -> "quit";
                 case "register" -> register(params);
+                case "login" -> login(params);
                 default -> help();
             };
         } catch (Exception ex) {
@@ -32,8 +35,16 @@ public class ChessClient {
 
     public String register (String... params) throws Exception {
         if (params.length >=3){
-            server.register(params);
-            return "You successfully registered";
+            Authtoken result = server.register(params);
+            return result.authToken();
+        }
+        throw new Exception("register failed");
+    }
+
+    public String login(String... params) throws Exception {
+        if (params.length >=2){
+            Authtoken result = server.login(params);
+            return result.authToken();
         }
         throw new Exception("register failed");
     }

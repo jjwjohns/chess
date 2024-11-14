@@ -1,4 +1,5 @@
-package client;
+package UI;
+
 import static UI.EscapeSequences.*;
 
 import java.util.Scanner;
