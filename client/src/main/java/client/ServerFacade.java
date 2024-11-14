@@ -2,6 +2,7 @@ package client;
 
 import com.google.gson.Gson;
 import model.Authtoken;
+import model.User;
 
 import java.io.*;
 import java.net.*;
@@ -16,7 +17,11 @@ public class ServerFacade {
 
     public Authtoken register(String... params) throws Exception{
         var path = "/user";
-        return this.makeRequest("POST", path, params, Authtoken.class);
+        String username = params[0];
+        String pass = params[1];
+        String email = params[2];
+        User user = new User(username, pass, email);
+        return this.makeRequest("POST", path, user, Authtoken.class);
     }
 
 

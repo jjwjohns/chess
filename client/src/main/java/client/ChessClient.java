@@ -22,6 +22,7 @@ public class ChessClient {
             var params = Arrays.copyOfRange(tokens, 1, tokens.length);
             return switch (cmd) {
                 case "quit" -> "quit";
+                case "register" -> register(params);
                 default -> help();
             };
         } catch (Exception ex) {
