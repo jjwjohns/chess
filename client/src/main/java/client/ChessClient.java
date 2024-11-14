@@ -29,6 +29,11 @@ public class ChessClient {
     }
 
     public String help() {
-        return "help";
+        return """
+                - register <USERNAME> <PASSWORD> <EMAIL> - creates account
+                - login <USERNAME> <PASSWORD> - logs in
+                - quit - exits out
+                - help - displays possible commands
+                """;
     }
 }
