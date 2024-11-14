@@ -62,4 +62,16 @@ public class ServerFacadeTests {
         Assertions.assertThrows(Exception.class, () -> FACADE.login("user", "password"));
     }
 
+    @Test
+    public void logoutPositiveTest() throws Exception {
+        Authtoken auth = FACADE.register("user", "password", "email");
+        FACADE.logout(auth);
+        Assertions.assertDoesNotThrow(() -> FACADE.login("user", "password"));
+    }
+
+    @Test
+    public void logoutNegativeTest() throws Exception {
+    Assertions.assertThrows(Exception.class, () -> FACADE.logout(new Authtoken("badtoken", "baduser")));
+    }
+
 }

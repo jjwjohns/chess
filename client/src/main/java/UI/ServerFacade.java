@@ -22,7 +22,7 @@ public class ServerFacade {
         String pass = params[1];
         String email = params[2];
         User user = new User(username, pass, email);
-        return this.makeRequest("POST", path, user, Authtoken.class);
+        return this.makeRequest("POST", path, user, null, Authtoken.class);
     }
 
     public Authtoken login(String... params) throws Exception {
@@ -30,24 +30,46 @@ public class ServerFacade {
         String username = params[0];
         String pass = params[1];
         LoginRequest login = new LoginRequest(username, pass);
-        return this.makeRequest("POST", path, login, Authtoken.class);
+        return this.makeRequest("POST", path, login, null, Authtoken.class);
     }
 
+    public void logout(Authtoken auth) throws Exception {
+        if (auth == null || auth.authToken() == null){
+            throw new Exception("authtoken cannot be null");
+        }
+        var path = "/session";
+        this.makeRequest("DELETE", path, null, auth.authToken(), null);
+    }
 
-    private <T> T makeRequest(String method, String path, Object request, Class<T> responseClass) throws Exception {
+    public String create(Authtoken auth, String... params) {
+//        var path = "/game";
+//        String gamename = params[0];
+//        this.makeRequest("POST", )
+        return "create not implemented";
+    }
+
+    public String list(Authtoken auth) {
+        return "list not implemented";
+    }
+
+    private <T> T makeRequest(String method, String path, Object request, String authtoken, Class<T> responseClass) throws Exception {
         try {
             URL url = (new URI(serverUrl + path)).toURL();
             HttpURLConnection http = (HttpURLConnection) url.openConnection();
             http.setRequestMethod(method);
             http.setDoOutput(true);
 
+            if (authtoken != null && !authtoken.isEmpty()){
+                http.setRequestProperty("Authorization", authtoken);
+            }
+
             writeBody(request, http);
             http.connect();
             throwIfNotSuccessful(http);
             return readBody(http, responseClass);
         } catch (Exception ex) {
-            throw new Exception(ex.getMessage());
-        }
+        throw new Exception("Request failed: " + ex.getMessage(), ex);
+    }
     }
 
     private static void writeBody(Object request, HttpURLConnection http) throws IOException {

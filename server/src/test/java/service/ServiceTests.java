@@ -68,8 +68,7 @@ public class ServiceTests {
 
     @Test
     public void testLogoutPositive() throws Exception {
-        SERVICE.register(USER);
-        Authtoken auth = SERVICE.login(LOGIN_REQUEST);
+        Authtoken auth = SERVICE.register(USER);
         SERVICE.logout(auth.authToken());
 
         Assertions.assertNull(ACCESS.getAuth(auth.authToken()));
@@ -77,8 +76,7 @@ public class ServiceTests {
 
     @Test
     public void testLogoutNegative() throws Exception {
-        SERVICE.register(USER);
-        Authtoken auth = SERVICE.login(LOGIN_REQUEST);
+        Authtoken auth = SERVICE.register(USER);
 
         Assertions.assertNull(ACCESS.getAuth("badtoken"));
         Assertions.assertNotNull(ACCESS.getAuth(auth.authToken()));

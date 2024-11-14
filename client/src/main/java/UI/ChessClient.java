@@ -34,6 +34,9 @@ public class ChessClient {
             else {
                 return switch (cmd) {
                     case "quit" -> "quit";
+                    case "logout" -> logout();
+                    case "create" -> create(params);
+                    case "list" -> list();
                     default -> help();
                 };
             }
@@ -58,6 +61,20 @@ public class ChessClient {
             return "successfully logged in";
         }
         throw new Exception("register failed");
+    }
+
+    private String logout() throws Exception{
+        server.logout(auth);
+        state = State.LOGGEDDOUT;
+        return "successfully logged out";
+    }
+
+    private String create(String... params) throws Exception{
+        return server.create(auth, params);
+    }
+
+    private String list() throws Exception {
+        return server.list(auth);
     }
 
     public String help() {
