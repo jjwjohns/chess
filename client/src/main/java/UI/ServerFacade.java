@@ -81,7 +81,7 @@ public class ServerFacade {
             return readBody(http, responseClass);
         } catch (Exception ex) {
         throw new Exception("Request failed: " + ex.getMessage(), ex);
-    }
+        }
     }
 
     private static void writeBody(Object request, HttpURLConnection http) throws IOException {

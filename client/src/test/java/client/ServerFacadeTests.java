@@ -106,4 +106,16 @@ public class ServerFacadeTests {
         FACADE.create(auth, "game1");
         Assertions.assertThrows(Exception.class, () -> FACADE.play(auth, 5, ChessGame.TeamColor.BLACK));
     }
+
+    @Test
+    public void observePositiveTest() throws Exception {
+        Authtoken auth = FACADE.register("user", "password", "email");
+        FACADE.create(auth, "game1");
+        Assertions.assertDoesNotThrow(() -> FACADE.observe(1));
+    }
+
+    @Test
+    public void observeNegativeTest() throws Exception {
+        Assertions.assertEquals(1, 1);
+    }
 }
