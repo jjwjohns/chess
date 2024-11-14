@@ -1,9 +1,7 @@
-package UI;
+package ui;
 
 import chess.ChessGame;
 import com.google.gson.Gson;
-import model.Authtoken;
-import model.LoginRequest;
 import model.*;
 
 import java.io.*;

@@ -1,11 +1,10 @@
-package UI;
+package ui;
 
 import chess.ChessGame;
 import model.*;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Objects;
 
 public class ChessClient {
     private final ServerFacade server;
@@ -115,8 +114,8 @@ public class ChessClient {
             }
 
             int index = Integer.parseInt(params[0])-1;
-            int ID = list.get(index).gameID();
-            server.play(auth, ID, color);
+            int id = list.get(index).gameID();
+            server.play(auth, id, color);
             return "Joined game successfully";
         }
         throw new Exception("play failed");
@@ -125,8 +124,8 @@ public class ChessClient {
     private String observe(String... params) throws Exception{
         if (params.length >= 1){
             int index = Integer.parseInt(params[0])-1;
-            int ID = list.get(index).gameID();
-            return server.observe(ID);
+            int id = list.get(index).gameID();
+            return server.observe(id);
         }
         throw new Exception("observe failed");
     }
