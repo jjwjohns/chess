@@ -25,7 +25,7 @@ public class ServerFacade {
         return this.makeRequest("POST", path, user, Authtoken.class);
     }
 
-    public Authtoken login(String[] params) throws Exception {
+    public Authtoken login(String... params) throws Exception {
         var path = "/session";
         String username = params[0];
         String pass = params[1];
