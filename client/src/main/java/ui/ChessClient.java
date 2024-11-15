@@ -116,7 +116,12 @@ public class ChessClient {
             int index = Integer.parseInt(params[0])-1;
             int id = list.get(index).gameID();
             server.play(auth, id, color);
-            return "Joined game successfully";
+            if (color == ChessGame.TeamColor.WHITE){
+                DrawBoard.drawWhite();
+                return "\nJoined game successfully";
+            }
+            DrawBoard.drawBlack();
+            return "\nJoined game successfully";
         }
         throw new Exception("play failed");
     }
@@ -124,8 +129,12 @@ public class ChessClient {
     private String observe(String... params) throws Exception{
         if (params.length >= 1){
             int index = Integer.parseInt(params[0])-1;
-            int id = list.get(index).gameID();
-            return server.observe(id);
+            if (index <= list.size()){
+                int id = list.get(index).gameID();
+                DrawBoard.drawWhite();
+                return "\n" + server.observe(id);
+            }
+            throw new Exception("Invalid ID");
         }
         throw new Exception("observe failed");
     }

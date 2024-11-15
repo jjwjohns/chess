@@ -115,6 +115,6 @@ public class ServerFacadeTests {
 
     @Test
     public void observeNegativeTest() throws Exception {
-        Assertions.assertEquals(1, 1);
+        Assertions.assertThrows(Exception.class, () -> facade.observe(-4));
     }
 }

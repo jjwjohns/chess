@@ -52,14 +52,17 @@ public class ServerFacade {
         return this.makeRequest("GET", path, null, auth.authToken(), ListResult.class);
     }
 
-    public void play(Authtoken auth, int ID, ChessGame.TeamColor color) throws Exception {
+    public void play(Authtoken auth, int id, ChessGame.TeamColor color) throws Exception {
         var path = "/game";
-        JoinRequest request = new JoinRequest(color, ID);
+        JoinRequest request = new JoinRequest(color, id);
         this.makeRequest("PUT", path, request, auth.authToken(), null);
     }
 
     public String observe(int id) throws Exception {
-        return "showing board " + id;
+        if (id < 0) {
+            throw new Exception("Invalid board ID");
+        }
+        return "Observing board " + id;
     }
 
     private <T> T makeRequest(String method, String path, Object request, String authtoken, Class<T> responseClass) throws Exception {
