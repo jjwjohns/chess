@@ -52,8 +52,13 @@ public class ChessClient {
 
     public String register (String... params) throws Exception {
         if (params.length >=3){
-            this.auth = server.register(params);
-            state = State.LOGGEDIN;
+            try {
+                this.auth = server.register(params);
+                state = State.LOGGEDIN;
+            }
+            catch (Exception e){
+                throw new Exception("Invalid Register Request");
+            }
             return "successfully registered";
         }
         throw new Exception("register failed");
@@ -61,8 +66,12 @@ public class ChessClient {
 
     public String login(String... params) throws Exception {
         if (params.length >=2){
-            this.auth = server.login(params);
-            state = State.LOGGEDIN;
+            try {
+                this.auth = server.login(params);
+                state = State.LOGGEDIN;
+            } catch (Exception e) {
+                throw new Exception("Invalid Login Request");
+            }
             return "successfully logged in";
         }
         throw new Exception("register failed");
@@ -101,7 +110,6 @@ public class ChessClient {
 
     private String play(String... params) throws Exception{
         if (params.length >= 2){
-
             ChessGame.TeamColor color;
             if (params[1].toLowerCase().contains("white")){
                 color = ChessGame.TeamColor.WHITE;
@@ -113,9 +121,18 @@ public class ChessClient {
                 throw new Exception("color must be BLACK or WHITE");
             }
 
-            int index = Integer.parseInt(params[0])-1;
-            int id = list.get(index).gameID();
-            server.play(auth, id, color);
+            try {
+                int index = Integer.parseInt(params[0])-1;
+                if (index < 0 || index >= list.size()) {
+                    return "Invalid Game Number";
+                }
+                int id = list.get(index).gameID();
+                server.play(auth, id, color);
+            }
+            catch (Exception e) {
+                throw new Exception("Invalid Play Request");
+            }
+
             if (color == ChessGame.TeamColor.WHITE){
                 DrawBoard.drawWhite();
                 return "\nJoined game successfully";
@@ -128,13 +145,17 @@ public class ChessClient {
 
     private String observe(String... params) throws Exception{
         if (params.length >= 1){
-            int index = Integer.parseInt(params[0])-1;
-            if (index <= list.size()){
-                int id = list.get(index).gameID();
-                DrawBoard.drawWhite();
-                return "\n" + server.observe(id);
+            try {
+                int index = Integer.parseInt(params[0]) - 1;
+                if (index <= list.size()) {
+                    int id = list.get(index).gameID();
+                    DrawBoard.drawWhite();
+                    return "\n" + server.observe(id);
+                }
+                throw new Exception("Invalid Game Number");
+            } catch (Exception e) {
+                throw new Exception ("Invalid Game Number");
             }
-            throw new Exception("Invalid ID");
         }
         throw new Exception("observe failed");
     }
@@ -150,10 +171,10 @@ public class ChessClient {
         }
         return """
                 - logout - exits when you are done
-                - create <GAMENAME> - creates a game
+                - create <GAME NAME> - creates a game
                 - list - lists all active games
-                - play <GAMEID> <WHITE|BLACK> - joins a game according to ID
-                - observe <GAMEID> - observe active game
+                - play <GAME NUMBER> <WHITE|BLACK> - joins a game according to ID
+                - observe <GAME NUMBER> - observe active game
                 - quit - exits
                 - help - displays possible commands
                 """;

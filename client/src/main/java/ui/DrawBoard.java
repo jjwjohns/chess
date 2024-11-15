@@ -11,14 +11,15 @@ public class DrawBoard {
 
     public static void drawBlack() {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
+        String[] headers = {EMPTY ," h ", " g ", " f ", " e ", " d ", " c ", " b ", " a ", EMPTY};
 
         out.print(ERASE_SCREEN);
 
-        drawLetters(out);
+        drawLetters(out, headers);
         drawWhiteTop(out);
         drawMiddleBlack(out);
         drawBlackBottom(out);
-        drawLetters(out);
+        drawLetters(out, headers);
 
         out.print(SET_BG_COLOR_DARK_GREY);
         out.print(SET_TEXT_COLOR_WHITE);
@@ -27,23 +28,22 @@ public class DrawBoard {
 
     public static void drawWhite() {
         var out = new PrintStream(System.out, true, StandardCharsets.UTF_8);
+        String[] headers = {EMPTY ," a ", " b ", " c ", " d ", " e ", " f ", " g ", " h ", EMPTY};
 
         out.print(ERASE_SCREEN);
 
-        drawLetters(out);
+        drawLetters(out, headers);
         drawBlacktop(out);
         drawMiddleWhite(out);
         drawWhiteBottom(out);
-        drawLetters(out);
+        drawLetters(out, headers);
 
         out.print(SET_BG_COLOR_DARK_GREY);
         out.print(SET_TEXT_COLOR_WHITE);
         out.println();
     }
 
-    private static void drawLetters(PrintStream out) {
-
-        String[] headers = {EMPTY ," a ", " b ", " c ", " d ", " e ", " f ", " g ", " h ", EMPTY};
+    private static void drawLetters(PrintStream out, String[] headers) {
         for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
             out.print(SET_TEXT_BOLD + SET_BG_COLOR_BLACK + headers[boardCol]);
         }
