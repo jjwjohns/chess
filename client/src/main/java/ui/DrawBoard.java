@@ -127,7 +127,7 @@ public class DrawBoard {
         out.println();
     }
 
-    private static void loopPieces(PrintStream out, String[] pieces, String setBgColorLightGrey, String setTextColorBlack, String setBgColorDarkGreen) {
+    private static void loopPieces(PrintStream out,String[] pieces,String setBgColorLightGrey,String setTextColorBlack,String setBgColorDarkGreen){
         for (int boardCol = 0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
             if (boardCol == 0 || boardCol == 9){
                 out.print(SET_BG_COLOR_BLACK + SET_TEXT_BOLD + pieces[boardCol]);
