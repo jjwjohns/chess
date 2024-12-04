@@ -33,9 +33,7 @@ public class UserGameCommand {
         return commandType;
     }
 
-    public String getAuthToken() {
-        return authToken;
-    }
+    public String getAuthToken() {return authToken;}
 
     public Integer getGameID() {
         return gameID;
