@@ -34,6 +34,16 @@ public class ChessClient {
                     default -> help();
                 };
             }
+            else if (state == State.JOINED){
+                return switch (cmd) {
+                    case "redraw" -> redraw();
+                    case "leave" -> leave();
+                    case "move" -> move();
+                    case "resign" -> resign();
+                    case "highlight" -> highlight();
+                    default -> help();
+                };
+            }
             else {
                 return switch (cmd) {
                     case "quit" -> "quit";
@@ -48,6 +58,26 @@ public class ChessClient {
         } catch (Exception ex) {
             return ex.getMessage();
         }
+    }
+
+    private String highlight() {
+        return "Have not implemented highlight";
+    }
+
+    private String resign() {
+        return "Have not implemented resign";
+    }
+
+    private String move() {
+        return "Have not implemented move";
+    }
+
+    private String leave() {
+        return "Have not implemented leave";
+    }
+
+    private String redraw() {
+        return "Have not implemented redraw";
     }
 
     public String register (String... params) throws Exception {
@@ -138,6 +168,7 @@ public class ChessClient {
                 return "\nJoined game successfully";
             }
             DrawBoard.drawBlack();
+            state = State.JOINED;
             return "\nJoined game successfully";
         }
         throw new Exception("play failed");
@@ -168,6 +199,16 @@ public class ChessClient {
                 - quit - exits
                 - help - displays possible commands
                 """;
+        }
+        else if (state == State.JOINED){
+            return """
+                    - redraw
+                    - leave
+                    - move
+                    - resign
+                    - highlight
+                    - help
+                    """;
         }
         return """
                 - logout - exits when you are done
