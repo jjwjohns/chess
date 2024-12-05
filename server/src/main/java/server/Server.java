@@ -10,7 +10,7 @@ import spark.*;
 import com.google.gson.Gson;
 
 public class Server {
-    public MySqlDataAccess dataAccess;
+    public static MySqlDataAccess dataAccess;
     {
         try {
             dataAccess = new MySqlDataAccess();

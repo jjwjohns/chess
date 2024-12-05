@@ -1,10 +1,14 @@
 package server.websocket;
 
+import chess.ChessGame;
 import com.google.gson.Gson;
+import dataaccess.DataAccessException;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
+import server.Server;
 import websocket.commands.UserGameCommand;
+import websocket.messages.ServerMessage;
 
 import java.io.IOException;
 
@@ -18,12 +22,12 @@ public class WebSocketHandler {
   public WebSocketHandler() {}
 
   @OnWebSocketMessage
-    public void onMessage(Session session, String message) throws IOException {
+    public void onMessage(Session session, String message) throws IOException, DataAccessException {
         this.session = session;
 
        UserGameCommand action = new Gson().fromJson(message, UserGameCommand.class);
         switch (action.getCommandType()) {
-            case CONNECT -> connect();
+            case CONNECT -> connect(action);
             case MAKE_MOVE -> makeMove();
             case LEAVE -> leave();
             case RESIGN -> resign();
@@ -31,8 +35,12 @@ public class WebSocketHandler {
     }
 
 
-    private void connect(){
+    private void connect(UserGameCommand action) throws IOException, DataAccessException {
         connections.add("user", this.session);
+        Integer gameID = action.getGameID();
+        ChessGame game =Server.dataAccess.getGame(gameID).game();
+        var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
+        connections.broadcast(null, notification);
     }
 
     private void makeMove(){
