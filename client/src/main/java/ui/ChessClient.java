@@ -2,6 +2,8 @@ package ui;
 
 import chess.ChessGame;
 import model.*;
+import websocket.NotificationHandler;
+import websocket.WebSocketFacade;
 
 import java.util.Arrays;
 import java.util.List;
@@ -10,16 +12,17 @@ public class ChessClient {
     private final ServerFacade server;
     private final String serverUrl;
     private final Repl repl;
+    private WebSocketFacade ws;
     private State state = State.LOGGEDOUT;
     private Authtoken auth;
     private List<Game> list;
 
-    public ChessClient(String serverUrl, Repl repl) {
+
+  public ChessClient(String serverUrl, Repl repl) {
         server = new ServerFacade(serverUrl);
         this.serverUrl = serverUrl;
         this.repl = repl;
-
-    }
+  }
 
     public String eval(String input) {
         try {
@@ -169,6 +172,8 @@ public class ChessClient {
             }
             DrawBoard.drawBlack();
             state = State.JOINED;
+            NotificationHandler notificationHandler1 = null;
+            this.ws = new WebSocketFacade(serverUrl, notificationHandler1);
             return "\nJoined game successfully";
         }
         throw new Exception("play failed");
