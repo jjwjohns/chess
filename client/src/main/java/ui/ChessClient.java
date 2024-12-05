@@ -2,7 +2,6 @@ package ui;
 
 import chess.ChessGame;
 import model.*;
-import websocket.NotificationHandler;
 import websocket.WebSocketFacade;
 
 import java.util.Arrays;
@@ -168,12 +167,13 @@ public class ChessClient {
 
             if (color == ChessGame.TeamColor.WHITE){
                 DrawBoard.drawWhite();
+                state = State.JOINED;
+                this.ws = new WebSocketFacade(serverUrl);
                 return "\nJoined game successfully";
             }
             DrawBoard.drawBlack();
             state = State.JOINED;
-            NotificationHandler notificationHandler1 = null;
-            this.ws = new WebSocketFacade(serverUrl, notificationHandler1);
+            this.ws = new WebSocketFacade(serverUrl);
             return "\nJoined game successfully";
         }
         throw new Exception("play failed");

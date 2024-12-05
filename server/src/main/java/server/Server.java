@@ -4,6 +4,7 @@ import chess.ChessGame;
 import dataaccess.DataAccessException;
 import dataaccess.MySqlDataAccess;
 import model.*;
+import server.websocket.WebSocketHandler;
 import service.ChessService;
 import spark.*;
 import com.google.gson.Gson;
@@ -19,11 +20,15 @@ public class Server {
     }
 
     public ChessService service = new ChessService(dataAccess);
+    public WebSocketHandler webSocketHandler = new WebSocketHandler();
 
     public int run(int desiredPort) {
         Spark.port(desiredPort);
 
         Spark.staticFiles.location("web");
+
+        Spark.webSocket("/ws", webSocketHandler);
+
         Spark.post("/user", this::register);
         Spark.delete("/db", this::clear);
         Spark.post("/session", this::login);
