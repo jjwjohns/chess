@@ -1,9 +1,6 @@
 package server.websocket;
 
-import chess.ChessBoard;
-import chess.ChessGame;
-import chess.ChessMove;
-import chess.ChessPiece;
+import chess.*;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import model.Authtoken;
@@ -74,7 +71,7 @@ public class WebSocketHandler {
       connections.broadcast(user, gameID, notification);
     }
 
-    private void makeMove(UserGameCommand action) throws DataAccessException, IOException {
+    private void makeMove(UserGameCommand action) throws DataAccessException, IOException, InvalidMoveException {
       String auth = action.getAuthToken();
       Authtoken token = Server.dataAccess.getAuth(auth);
       if (token == null){
@@ -86,9 +83,7 @@ public class WebSocketHandler {
       Integer gameID = action.getGameID();
       ChessMove move = action.getMove();
       ChessGame game = Server.dataAccess.getGame(gameID).game();
-      ChessBoard board = game.getBoard();
-      ChessPiece piece = board.getPiece(move.getStartPosition());
-      Collection<ChessMove> moves = piece.pieceMoves(board, move.getStartPosition());
+      Collection<ChessMove> moves = game.validMoves(move.getStartPosition());
 
       if (!moves.contains(move)){
         ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: Move is invalid");
@@ -96,6 +91,16 @@ public class WebSocketHandler {
         return;
       }
 
+      game.makeMove(move);
+
+      Server.dataAccess.updateGame(gameID, game);
+
+      var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
+      connections.broadcast(null, gameID, notification);
+
+      String user = token.username();
+      notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, move.toString());
+      connections.broadcast(user, gameID, notification);
     }
 
     private void leave(){

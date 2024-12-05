@@ -169,6 +169,12 @@ public class MySqlDataAccess {
         executeUpdate(jsonUpdateStatement, json, game.gameID());
     }
 
+    public void updateGame(Integer gameID ,ChessGame game) throws DataAccessException {
+        var json = new Gson().toJson(game);
+        var jsonUpdateStatement = "UPDATE games SET json = ? WHERE id = ?";
+        executeUpdate(jsonUpdateStatement, json, gameID);
+    }
+
     //    clear methods
     public void clear() throws DataAccessException {
         deleteGames();
