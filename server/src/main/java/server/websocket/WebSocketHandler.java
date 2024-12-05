@@ -4,6 +4,7 @@ import chess.*;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import model.Authtoken;
+import model.Game;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
@@ -13,6 +14,7 @@ import websocket.messages.ServerMessage;
 
 import java.io.IOException;
 import java.util.Collection;
+import java.util.Objects;
 
 
 @WebSocket
@@ -74,6 +76,7 @@ public class WebSocketHandler {
     private void makeMove(UserGameCommand action) throws DataAccessException, IOException, InvalidMoveException {
       String auth = action.getAuthToken();
       Authtoken token = Server.dataAccess.getAuth(auth);
+      String user = token.username();
       if (token == null){
         ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: Authtoken is invalid");
         session.getRemote().sendString(new Gson().toJson(notification));
@@ -82,8 +85,9 @@ public class WebSocketHandler {
 
       Integer gameID = action.getGameID();
       ChessMove move = action.getMove();
-      ChessGame game = Server.dataAccess.getGame(gameID).game();
-      Collection<ChessMove> moves = game.validMoves(move.getStartPosition());
+      Game game = Server.dataAccess.getGame(gameID);
+      ChessGame chessGame = game.game();
+      Collection<ChessMove> moves = chessGame.validMoves(move.getStartPosition());
 
       if (!moves.contains(move)){
         ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: Move is invalid");
@@ -91,14 +95,28 @@ public class WebSocketHandler {
         return;
       }
 
-      game.makeMove(move);
+      String whiteUser = game.whiteUsername();
+      String blackUser = game.blackUsername();
+      ChessGame.TeamColor turn = chessGame.getTeamTurn();
+      ServerMessage notification = null;
+      if (turn == ChessGame.TeamColor.WHITE && !Objects.equals(whiteUser, user)){
+        notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: Please wait for your turn");
+        session.getRemote().sendString(new Gson().toJson(notification));
+        return;
+      }
+      else if (turn == ChessGame.TeamColor.BLACK && !Objects.equals(blackUser, user)){
+        notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: Please wait for your turn");
+        session.getRemote().sendString(new Gson().toJson(notification));
+        return;
+      }
 
-      Server.dataAccess.updateGame(gameID, game);
+      chessGame.makeMove(move);
 
-      var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
+      Server.dataAccess.updateGame(gameID, chessGame);
+
+      notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, chessGame);
       connections.broadcast(null, gameID, notification);
 
-      String user = token.username();
       notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, move.toString());
       connections.broadcast(user, gameID, notification);
     }
