@@ -1,6 +1,7 @@
 package server.websocket;
 
 import chess.ChessGame;
+import chess.ChessMove;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
 import model.Authtoken;
@@ -24,13 +25,12 @@ public class WebSocketHandler {
 
   @OnWebSocketMessage
     public void onMessage(Session session, String message) throws Exception {
-        System.out.println("onMessage (server)");
         this.session = session;
 
        UserGameCommand action = new Gson().fromJson(message, UserGameCommand.class);
         switch (action.getCommandType()) {
             case CONNECT -> connect(action);
-            case MAKE_MOVE -> makeMove();
+            case MAKE_MOVE -> makeMove(action);
             case LEAVE -> leave();
             case RESIGN -> resign();
         }
@@ -66,14 +66,23 @@ public class WebSocketHandler {
         var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
         session.getRemote().sendString(new Gson().toJson(notification));
 
-        String message = "player" + user + " has joined game " + gameID;
+        String message = "player " + user + " has joined game " + gameID;
 
         notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
         connections.broadcast(user, gameID, notification);
     }
 
-    private void makeMove(){
-        System.out.println("makeMove not implemented");
+    private void makeMove(UserGameCommand action) throws DataAccessException, IOException {
+        ChessMove move = action.getMove();
+        String auth = action.getAuthToken();
+        Integer gameID = action.getGameID();
+        Authtoken token = Server.dataAccess.getAuth(auth);
+        if (token == null){
+          ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: Authtoken is invalid");
+          session.getRemote().sendString(new Gson().toJson(notification));
+          return;
+        }
+
     }
 
     private void leave(){

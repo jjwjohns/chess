@@ -165,18 +165,20 @@ public class ChessClient {
                 throw new Exception("Invalid Play Request");
             }
 
+            int index = Integer.parseInt(params[0])-1;
+            int id = list.get(index).gameID();
+
             if (color == ChessGame.TeamColor.WHITE){
                 DrawBoard.drawWhite();
                 state = State.JOINED;
                 this.ws = new WebSocketFacade(serverUrl);
+                ws.join(auth.authToken(), id);
                 return "\nJoined game successfully";
             }
             DrawBoard.drawBlack();
             state = State.JOINED;
 
             this.ws = new WebSocketFacade(serverUrl);
-            int index = Integer.parseInt(params[0])-1;
-            int id = list.get(index).gameID();
             ws.join(auth.authToken(), id);
             return "\nJoined game successfully";
         }

@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
+import static ui.EscapeSequences.*;
+
 //need to extend Endpoint for websocket to work properly
 public class WebSocketFacade extends Endpoint {
 
@@ -29,14 +31,8 @@ public class WebSocketFacade extends Endpoint {
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
                 public void onMessage(String s) {
-                    System.out.println("onMessage (client) " + s);
                     ServerMessage notification = new Gson().fromJson(s, ServerMessage.class);
                     handleMessage(notification);
-                }
-
-                public void onMessage(ServerMessage message) {
-                    System.out.println("onMessage (client) " + message);
-                    handleMessage(message);
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {
@@ -45,8 +41,18 @@ public class WebSocketFacade extends Endpoint {
     }
 
     private void handleMessage(ServerMessage notification) {
-        Gson gson = new Gson();
-        System.out.println("could not handle" + gson.toJson(notification) + " because handleMessages is not implemented.");
+        if (notification.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
+            System.out.println(SET_TEXT_COLOR_GREEN + notification.getGame());
+            System.out.print("\n" + RESET_TEXT_COLOR);
+        }
+        else if (notification.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION){
+            System.out.println(SET_TEXT_COLOR_GREEN + notification.getMessage());
+            System.out.print("\n" + RESET_TEXT_COLOR);
+        }
+        else if (notification.getServerMessageType() == ServerMessage.ServerMessageType.ERROR){
+            System.out.println(SET_TEXT_COLOR_RED + notification.getErrorMessage());
+            System.out.print("\n" + RESET_TEXT_COLOR);
+        }
     }
 
     //Endpoint requires this method, but you don't have to do anything

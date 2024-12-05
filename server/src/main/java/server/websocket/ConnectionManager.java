@@ -15,7 +15,6 @@ public class ConnectionManager {
     public final ConcurrentHashMap<String, Connection> connections = new ConcurrentHashMap<>();
 
     public void add(String user, Integer gameID, Session session) {
-        System.out.println("add (server)");
         var connection = new Connection(user, gameID, session);
         connections.put(user, connection);
     }
