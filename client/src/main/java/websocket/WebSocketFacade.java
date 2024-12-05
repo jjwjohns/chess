@@ -17,6 +17,7 @@ public class WebSocketFacade extends Endpoint {
     Session session;
 
     public WebSocketFacade(String url) throws Exception {
+        System.out.println("WebSocketFacade (client)");
         try {
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/ws");
@@ -27,9 +28,15 @@ public class WebSocketFacade extends Endpoint {
             //set message handler
             this.session.addMessageHandler(new MessageHandler.Whole<String>() {
                 @Override
-                public void onMessage(String message) {
-                    ServerMessage notification = new Gson().fromJson(message, ServerMessage.class);
+                public void onMessage(String s) {
+                    System.out.println("onMessage (client) " + s);
+                    ServerMessage notification = new Gson().fromJson(s, ServerMessage.class);
                     handleMessage(notification);
+                }
+
+                public void onMessage(ServerMessage message) {
+                    System.out.println("onMessage (client) " + message);
+                    handleMessage(message);
                 }
             });
         } catch (DeploymentException | IOException | URISyntaxException ex) {
@@ -38,15 +45,18 @@ public class WebSocketFacade extends Endpoint {
     }
 
     private void handleMessage(ServerMessage notification) {
-        System.out.println("could not handle" + notification + " because handleMessages is not implemented.");
+        Gson gson = new Gson();
+        System.out.println("could not handle" + gson.toJson(notification) + " because handleMessages is not implemented.");
     }
 
     //Endpoint requires this method, but you don't have to do anything
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
+        System.out.println("onOpen (client)");
     }
 
     public void join(String auth, int id) throws ResponseException {
+        System.out.println("join (client)");
         try {
             var action = new UserGameCommand(UserGameCommand.CommandType.CONNECT, auth, id);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));

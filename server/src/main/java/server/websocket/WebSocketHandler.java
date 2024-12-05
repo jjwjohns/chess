@@ -22,7 +22,8 @@ public class WebSocketHandler {
   public WebSocketHandler() {}
 
   @OnWebSocketMessage
-    public void onMessage(Session session, String message) throws IOException, DataAccessException {
+    public void onMessage(Session session, String message) throws Exception {
+        System.out.println("onMessage (server)");
         this.session = session;
 
        UserGameCommand action = new Gson().fromJson(message, UserGameCommand.class);
@@ -35,12 +36,23 @@ public class WebSocketHandler {
     }
 
 
-    private void connect(UserGameCommand action) throws IOException, DataAccessException {
-        connections.add("user", this.session);
+    private void connect(UserGameCommand action) throws Exception {
+        String auth = action.getAuthToken();
         Integer gameID = action.getGameID();
-        ChessGame game =Server.dataAccess.getGame(gameID).game();
+        String user = Server.dataAccess.getAuth(auth).username();
+
+        connections.add(user, gameID, this.session);
+        ChessGame game = Server.dataAccess.getGame(gameID).game();
+
+        System.out.println(action.getCommandType());
+
         var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
-        connections.broadcast(null, notification);
+        session.getRemote().sendString(new Gson().toJson(notification));
+
+        String message = "player" + user + " has joined game " + gameID;
+
+        notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+        connections.broadcast(user, gameID, notification);
     }
 
     private void makeMove(){
@@ -56,6 +68,7 @@ public class WebSocketHandler {
         System.out.println("resign not implemented");
     }
 }
+
 //    private void enter(String visitorName, Session session) throws IOException {
 //        connections.add(visitorName, session);
 //        var message = String.format("%s is in the shop", visitorName);

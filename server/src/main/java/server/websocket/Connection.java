@@ -2,21 +2,22 @@ package server.websocket;
 
 import com.google.gson.Gson;
 import org.eclipse.jetty.websocket.api.Session;
-import websocket.messages.ServerMessage;
 
 import java.io.IOException;
 
 public class Connection {
-    public String visitorName;
+    public String user;
     public Session session;
+    public Integer gameID;
 
-    public Connection(String visitorName, Session session) {
-        this.visitorName = visitorName;
+    public Connection(String user, Integer gameID, Session session) {
+        this.user = user;
         this.session = session;
+        this.gameID = gameID;
     }
 
-    public void send(ServerMessage msg) throws IOException {
+    public void send(String msg) throws IOException {
         String jsonMessage = new Gson().toJson(msg);
-        session.getRemote().sendString(jsonMessage);
+        session.getRemote().sendString(msg);
     }
 }
