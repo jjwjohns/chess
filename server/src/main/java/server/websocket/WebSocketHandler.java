@@ -3,6 +3,7 @@ package server.websocket;
 import chess.ChessGame;
 import com.google.gson.Gson;
 import dataaccess.DataAccessException;
+import model.Authtoken;
 import org.eclipse.jetty.websocket.api.Session;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
@@ -37,12 +38,28 @@ public class WebSocketHandler {
 
 
     private void connect(UserGameCommand action) throws Exception {
-        String auth = action.getAuthToken();
-        Integer gameID = action.getGameID();
-        String user = Server.dataAccess.getAuth(auth).username();
+
+          String auth = action.getAuthToken();
+          Integer gameID = action.getGameID();
+          Authtoken token = Server.dataAccess.getAuth(auth);
+          if (token == null){
+            ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: Authtoken is invalid");
+            session.getRemote().sendString(new Gson().toJson(notification));
+            return;
+          }
+
+        String user = token.username();
 
         connections.add(user, gameID, this.session);
-        ChessGame game = Server.dataAccess.getGame(gameID).game();
+        ChessGame game;
+        try {
+          game = Server.dataAccess.getGame(gameID).game();
+        } catch (Exception e){
+          ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: Game ID is invalid");
+          session.getRemote().sendString(new Gson().toJson(notification));
+          return;
+        }
+
 
         System.out.println(action.getCommandType());
 
