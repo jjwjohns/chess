@@ -44,7 +44,7 @@ public class WebSocketHandler {
       Integer gameID = action.getGameID();
       Authtoken token = Server.dataAccess.getAuth(auth);
       if (token == null){
-        ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: Authtoken is invalid");
+        ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Authtoken is invalid");
         session.getRemote().sendString(new Gson().toJson(notification));
         return;
       }
@@ -56,7 +56,7 @@ public class WebSocketHandler {
       try {
         game = Server.dataAccess.getGame(gameID).game();
       } catch (Exception e){
-        ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: Game ID is invalid");
+        ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Game ID is invalid");
         session.getRemote().sendString(new Gson().toJson(notification));
         return;
       }
@@ -78,7 +78,7 @@ public class WebSocketHandler {
       Authtoken token = Server.dataAccess.getAuth(auth);
       String user = token.username();
       if (token == null){
-        ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: Authtoken is invalid");
+        ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Authtoken is invalid");
         session.getRemote().sendString(new Gson().toJson(notification));
         return;
       }
@@ -90,7 +90,7 @@ public class WebSocketHandler {
       Collection<ChessMove> moves = chessGame.validMoves(move.getStartPosition());
 
       if (!moves.contains(move)){
-        ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: Move is invalid");
+        ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Move is invalid");
         session.getRemote().sendString(new Gson().toJson(notification));
         return;
       }
@@ -100,12 +100,17 @@ public class WebSocketHandler {
       ChessGame.TeamColor turn = chessGame.getTeamTurn();
       ServerMessage notification = null;
       if (turn == ChessGame.TeamColor.WHITE && !Objects.equals(whiteUser, user)){
-        notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: Please wait for your turn");
+        notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Please wait for your turn");
         session.getRemote().sendString(new Gson().toJson(notification));
         return;
       }
       else if (turn == ChessGame.TeamColor.BLACK && !Objects.equals(blackUser, user)){
-        notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: Please wait for your turn");
+        notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Please wait for your turn");
+        session.getRemote().sendString(new Gson().toJson(notification));
+        return;
+      }
+      else if (chessGame.getBoard().getPiece(move.getStartPosition()).getTeamColor() != turn) {
+        notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "You can only move your pieces!");
         session.getRemote().sendString(new Gson().toJson(notification));
         return;
       }
@@ -119,6 +124,9 @@ public class WebSocketHandler {
 
       notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, move.toString());
       connections.broadcast(user, gameID, notification);
+
+
+
 
       if (chessGame.isInCheck(ChessGame.TeamColor.BLACK)){
         notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, "Black is in check");
