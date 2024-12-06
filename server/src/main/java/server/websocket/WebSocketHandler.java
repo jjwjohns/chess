@@ -19,9 +19,10 @@ import java.util.Objects;
 
 @WebSocket
 public class WebSocketHandler {
-    private  Session session;
+  private Boolean gameOver = Boolean.FALSE;
+  private  Session session;
 
-    private final ConnectionManager connections = new ConnectionManager();
+  private final ConnectionManager connections = new ConnectionManager();
 
   public WebSocketHandler() {}
 
@@ -60,9 +61,6 @@ public class WebSocketHandler {
         return;
       }
 
-
-      System.out.println(action.getCommandType());
-
       var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
       session.getRemote().sendString(new Gson().toJson(notification));
 
@@ -73,11 +71,17 @@ public class WebSocketHandler {
     }
 
     private void makeMove(UserGameCommand action) throws Exception {
+      ServerMessage notification;
+      if (gameOver == Boolean.TRUE){
+        notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Game is Over");
+        session.getRemote().sendString(new Gson().toJson(notification));
+        return;
+      }
+
       String auth = action.getAuthToken();
       Authtoken token = Server.dataAccess.getAuth(auth);
-      ServerMessage notification = null;
       if (token == null){
-        notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Game is Over");
+        notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Invalid AuthToken");
         session.getRemote().sendString(new Gson().toJson(notification));
         return;
       }
@@ -87,11 +91,6 @@ public class WebSocketHandler {
       ChessMove move = action.getMove();
       Game game = Server.dataAccess.getGame(gameID);
       ChessGame chessGame = game.game();
-      if (chessGame == null){
-        notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "bug to be fixed");
-        session.getRemote().sendString(new Gson().toJson(notification));
-        return;
-      }
       Collection<ChessMove> moves = chessGame.validMoves(move.getStartPosition());
 
       if (!moves.contains(move)){
@@ -139,11 +138,13 @@ public class WebSocketHandler {
       if (chessGame.isInCheckmate(ChessGame.TeamColor.WHITE)){
         notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, move + "White is in Checkmate!");
         connections.broadcast(user, gameID, notification);
+        gameOver = Boolean.TRUE;
         return;
       }
       else if (chessGame.isInCheckmate(ChessGame.TeamColor.BLACK)){
         notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, move + "Black is in Checkmate!");
         connections.broadcast(user, gameID, notification);
+        gameOver = Boolean.TRUE;
         return;
       }
       else if (chessGame.isInCheck(ChessGame.TeamColor.BLACK)){
@@ -159,11 +160,13 @@ public class WebSocketHandler {
       else if (chessGame.isInStalemate(ChessGame.TeamColor.WHITE)){
         notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, move + "Stalemate!");
         connections.broadcast(user, gameID, notification);
+        gameOver = Boolean.TRUE;
         return;
       }
       else if (chessGame.isInStalemate(ChessGame.TeamColor.BLACK)){
         notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, move + "Stalemate!");
         connections.broadcast(user, gameID, notification);
+        gameOver = Boolean.TRUE;
         return;
       }
 
@@ -175,8 +178,6 @@ public class WebSocketHandler {
       Integer gameID = action.getGameID();
       Authtoken token = Server.dataAccess.getAuth(action.getAuthToken());
       String user = token.username();
-
-      connections.remove(user);
 
       Game game = Server.dataAccess.getGame(gameID);
       if (Objects.equals(game.blackUsername(), user)){
@@ -190,34 +191,44 @@ public class WebSocketHandler {
 
       ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, user + "has left the game");
       connections.broadcast(user, gameID, notification);
+
+      connections.remove(user);
     }
 
-    private void resign(UserGameCommand action){
-      System.out.println("resign not implemented");
+    private void resign(UserGameCommand action) throws IOException, DataAccessException {
+      ServerMessage notification;
+      if (gameOver == Boolean.TRUE){
+        notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Cannot resign. The Game is already over");
+        session.getRemote().sendString(new Gson().toJson(notification));
+        return;
+      }
+
+
+      Integer gameID = action.getGameID();
+      Authtoken token = Server.dataAccess.getAuth(action.getAuthToken());
+      String user = token.username();
+
+      Game game = Server.dataAccess.getGame(gameID);
+
+      if (!Objects.equals(game.whiteUsername(), user) && !Objects.equals(game.blackUsername(), user)){
+        notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Cannot resign. You are an observer");
+        session.getRemote().sendString(new Gson().toJson(notification));
+        return;
+      }
+
+      if (Objects.equals(game.blackUsername(), user)){
+        game = game.updateBlackUsername(null);
+      }
+      else if (Objects.equals(game.whiteUsername(), user)){
+        game = game.updateWhiteUsername(null);
+      }
+
+      Server.dataAccess.updateGame(gameID, game);
+
+      notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, user + "has resigned the game");
+      connections.broadcast(null, gameID, notification);
+
+      gameOver = Boolean.TRUE;
+      connections.remove(user);
     }
 }
-
-//    private void enter(String visitorName, Session session) throws IOException {
-//        connections.add(visitorName, session);
-//        var message = String.format("%s is in the shop", visitorName);
-//        var notification = new Notification(Notification.Type.ARRIVAL, message);
-//        connections.broadcast(visitorName, notification);
-//    }
-//
-//    private void exit(String visitorName) throws IOException {
-//        connections.remove(visitorName);
-//        var message = String.format("%s left the shop", visitorName);
-//        var notification = new Notification(Notification.Type.DEPARTURE, message);
-//        connections.broadcast(visitorName, notification);
-//    }
-//
-//    public void makeNoise(String petName, String sound) throws ResponseException {
-//        try {
-//            var message = String.format("%s says %s", petName, sound);
-//            var notification = new Notification(Notification.Type.NOISE, message);
-//            connections.broadcast("", notification);
-//        } catch (Exception ex) {
-//            throw new ResponseException(500, ex.getMessage());
-//        }
-//    }
-//}
