@@ -1,5 +1,6 @@
 package websocket;
 
+import chess.ChessGame;
 import chess.ChessMove;
 import com.google.gson.Gson;
 import ui.DrawBoard;
@@ -15,7 +16,7 @@ import static ui.EscapeSequences.*;
 
 //need to extend Endpoint for websocket to work properly
 public class WebSocketFacade extends Endpoint {
-
+    ChessGame game;
     Session session;
 
     public WebSocketFacade(String url) throws Exception {
@@ -41,7 +42,9 @@ public class WebSocketFacade extends Endpoint {
 
     private void handleMessage(ServerMessage notification) {
         if (notification.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
-            System.out.println(SET_TEXT_COLOR_GREEN + new Gson().toJson(notification.getGame()));
+            ChessGame chessGame = notification.getGame();
+            game = chessGame;
+            System.out.println(SET_TEXT_COLOR_GREEN + new Gson().toJson(chessGame));
 //            if (notification.toString().contains("White"))
             System.out.print("\n" + RESET_TEXT_COLOR);
             DrawBoard.drawWhite();
@@ -96,6 +99,11 @@ public class WebSocketFacade extends Endpoint {
         } catch (IOException ex) {
             throw new Exception(ex.getMessage());
         }
+    }
+
+    public void redraw() {
+        System.out.println(new Gson().toJson(game));
+        DrawBoard.drawWhite();
     }
 }
 

@@ -133,7 +133,8 @@ public class ChessClient {
     }
 
     private String redraw() {
-      return "Have not implemented redraw";
+      ws.redraw();
+      return "";
     }
 
     public String register (String... params) throws Exception {
