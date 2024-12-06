@@ -47,16 +47,13 @@ public class WebSocketFacade extends Endpoint {
 
     private void handleMessage(ServerMessage notification) {
         if (notification.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
-            ChessGame chessGame = notification.getGame();
-            game = chessGame;
-            System.out.println(SET_TEXT_COLOR_GREEN + new Gson().toJson(chessGame));
-//            if (notification.toString().contains("White"))
+            game = notification.getGame();
             System.out.print("\n" + RESET_TEXT_COLOR);
             if (Objects.equals(color, "white") || Objects.equals(color, "none")) {
-                DrawBoard.drawWhite();
+                DrawBoard.drawWhite(game.getBoard(), null);
             }
             else {
-                DrawBoard.drawBlack();
+                DrawBoard.drawBlack(game.getBoard(), null);
             }
             System.out.print("\n" + RESET_TEXT_COLOR);
         }
@@ -113,12 +110,11 @@ public class WebSocketFacade extends Endpoint {
     }
 
     public void redraw() {
-        System.out.println(new Gson().toJson(game));
         if (Objects.equals(color, "white") || Objects.equals(color, "none")) {
-            DrawBoard.drawWhite();
+            DrawBoard.drawWhite(game.getBoard(), null);
         }
         else {
-            DrawBoard.drawBlack();
+            DrawBoard.drawBlack(game.getBoard(), null);
         }
     }
 
@@ -132,12 +128,10 @@ public class WebSocketFacade extends Endpoint {
             validPositions.add(move.getEndPosition());
         }
         if (Objects.equals(color, "white") || Objects.equals(color, "none")) {
-            DrawBoard.drawWhite();
-            System.out.println(validPositions);
+            DrawBoard.drawWhite(game.getBoard(), validPositions);
         }
         else {
-            DrawBoard.drawBlack();
-            System.out.println(validPositions);
+            DrawBoard.drawBlack(game.getBoard(), validPositions);
         }
     }
 }
