@@ -241,12 +241,12 @@ public class ChessClient {
         }
         else if (state == State.JOINED){
             return """
-                    - redraw
-                    - leave
-                    - move
-                    - resign
-                    - highlight
-                    - help
+                    - redraw - redraws the chess board to be more easily viewable
+                    - leave - leaves the game without resigning
+                    - move <PIECE> <LOCATION> <MOVE LOCATION> - moves a piece (example: move P b2 b4)
+                    - resign - forfeits the game
+                    - highlight <PIECE> <LOCATION> - highlights the possible moves of a piece (example: highlight P b2)
+                    - help - displays possible commands
                     """;
         }
         return """
