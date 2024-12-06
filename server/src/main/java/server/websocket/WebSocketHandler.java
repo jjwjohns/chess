@@ -144,26 +144,26 @@ public class WebSocketHandler {
       connections.broadcast(null, gameID, notification);
 
       if (chessGame.isInCheckmate(ChessGame.TeamColor.WHITE)){
-        notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, move + "White is in Checkmate!");
+        notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, move + " " + game.whiteUsername() + " is in Checkmate!");
         connections.broadcast(user, gameID, notification);
         game = game.updateGameOver();
         Server.dataAccess.updateGame(gameID, game);
         return;
       }
       else if (chessGame.isInCheckmate(ChessGame.TeamColor.BLACK)){
-        notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, move + "Black is in Checkmate!");
+        notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, move + " " + game.blackUsername() + " is in Checkmate!");
         connections.broadcast(user, gameID, notification);
         game = game.updateGameOver();
         Server.dataAccess.updateGame(gameID, game);
         return;
       }
       else if (chessGame.isInCheck(ChessGame.TeamColor.BLACK)){
-        notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, move + "Black is in check");
+        notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, move + " " + game.blackUsername() + " is in Check!");
         connections.broadcast(user, gameID, notification);
         return;
       }
       else if (chessGame.isInCheck(ChessGame.TeamColor.WHITE)){
-        notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, move + "White is in check");
+        notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, move + " " + game.whiteUsername() + " is in Check!");
         connections.broadcast(user, gameID, notification);
         return;
       }
@@ -218,17 +218,10 @@ public class WebSocketHandler {
         return;
       }
 
-      if (Objects.equals(game.blackUsername(), user)){
-        game = game.updateBlackUsername(null);
-      }
-      else if (Objects.equals(game.whiteUsername(), user)){
-        game = game.updateWhiteUsername(null);
-      }
       game = game.updateGameOver();
       Server.dataAccess.updateGame(gameID, game);
 
-      notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, user + "has resigned the game");
+      notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, user + " has resigned the game");
       connections.broadcast(null, gameID, notification);
-      connections.remove(user);
     }
 }

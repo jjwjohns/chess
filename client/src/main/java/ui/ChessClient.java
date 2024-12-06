@@ -6,6 +6,8 @@ import websocket.WebSocketFacade;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.Scanner;
 
 public class ChessClient {
     private final ServerFacade server;
@@ -67,9 +69,23 @@ public class ChessClient {
       return "Have not implemented highlight";
     }
 
-    private String resign() {
-
-      return "Have not implemented resign";
+    private String resign() throws Exception {
+      Scanner scanner = new Scanner(System.in);
+      System.out.println("Are you sure you want to Resign? (Y/N)");
+      String response = scanner.nextLine();
+      while (true){
+        if (Objects.equals(response, "Y")){
+          ws.resign(auth.authToken(), gameNumber);
+          return "Thanks for playing!";
+        }
+        else if (Objects.equals(response, "N")){
+          return "You have not resigned. Keep on playing!";
+        }
+        else {
+          System.out.println("Response must be Y or N");
+          response = scanner.nextLine();
+        }
+      }
     }
 
     private String move() {
