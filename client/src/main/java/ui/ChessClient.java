@@ -86,7 +86,7 @@ public class ChessClient {
       while (true){
         if (Objects.equals(response, "Y")){
           ws.resign(auth.authToken(), gameNumber);
-          return "Thanks for playing!";
+          return "";
         }
         else if (Objects.equals(response, "N")){
           return "You have not resigned. Keep on playing!";

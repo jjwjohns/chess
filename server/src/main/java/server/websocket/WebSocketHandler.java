@@ -151,27 +151,27 @@ public class WebSocketHandler {
 
       if (chessGame.isInCheckmate(ChessGame.TeamColor.WHITE)){
         notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, game.whiteUsername() + " is in Checkmate!");
-        connections.broadcast(user, gameID, notification);
+        connections.broadcast(null, gameID, notification);
         game = game.updateGameOver();
         Server.dataAccess.updateGame(gameID, game);
       }
       else if (chessGame.isInCheckmate(ChessGame.TeamColor.BLACK)){
         notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, game.blackUsername() + " is in Checkmate!");
-        connections.broadcast(user, gameID, notification);
+        connections.broadcast(null, gameID, notification);
         game = game.updateGameOver();
         Server.dataAccess.updateGame(gameID, game);
       }
       else if (chessGame.isInCheck(ChessGame.TeamColor.BLACK)){
         notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, game.blackUsername() + " is in Check!");
-        connections.broadcast(user, gameID, notification);
+        connections.broadcast(null, gameID, notification);
       }
       else if (chessGame.isInCheck(ChessGame.TeamColor.WHITE)){
         notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, game.whiteUsername() + " is in Check!");
-        connections.broadcast(user, gameID, notification);
+        connections.broadcast(null, gameID, notification);
       }
       else if (chessGame.isInStalemate(ChessGame.TeamColor.WHITE) || chessGame.isInStalemate(ChessGame.TeamColor.BLACK)){
         notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, "Stalemate!");
-        connections.broadcast(user, gameID, notification);
+        connections.broadcast(null, gameID, notification);
         game = game.updateGameOver();
         Server.dataAccess.updateGame(gameID, game);
       }
