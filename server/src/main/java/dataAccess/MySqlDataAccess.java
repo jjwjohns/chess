@@ -102,12 +102,12 @@ public class MySqlDataAccess {
     //    Game methods
     public CreateResult addGame(String gameName) throws DataAccessException {
         var statement = "INSERT INTO games (whiteusername, blackusername, gamename, json) VALUES (?, ?, ?, ?)";
-        Game game = new Game(0, null, null, gameName, new ChessGame());
+        Game game = new Game(0, null, null, gameName, new ChessGame(), 0);
         var json = new Gson().toJson(game);
         var id = executeUpdate(statement, game.whiteUsername(), game.blackUsername(), game.gameName(), json);
 
 //        update game json
-        Game game1 = new Game(id, null, null, gameName, new ChessGame());
+        Game game1 = new Game(id, null, null, gameName, new ChessGame(), 0);
         var json1 = new Gson().toJson(game1);
         var updateStatement = "UPDATE games SET json = ? WHERE id = ?";
         executeUpdate(updateStatement, json1, id);

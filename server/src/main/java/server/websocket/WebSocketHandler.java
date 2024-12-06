@@ -6,6 +6,8 @@ import dataaccess.DataAccessException;
 import model.Authtoken;
 import model.Game;
 import org.eclipse.jetty.websocket.api.Session;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
+import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import server.Server;
@@ -19,7 +21,6 @@ import java.util.Objects;
 
 @WebSocket
 public class WebSocketHandler {
-  private Boolean gameOver = Boolean.FALSE;
   private  Session session;
 
   private final ConnectionManager connections = new ConnectionManager();
@@ -72,12 +73,6 @@ public class WebSocketHandler {
 
     private void makeMove(UserGameCommand action) throws Exception {
       ServerMessage notification;
-      if (gameOver == Boolean.TRUE){
-        notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Game is Over");
-        session.getRemote().sendString(new Gson().toJson(notification));
-        return;
-      }
-
       String auth = action.getAuthToken();
       Authtoken token = Server.dataAccess.getAuth(auth);
       if (token == null){
@@ -90,6 +85,13 @@ public class WebSocketHandler {
       Integer gameID = action.getGameID();
       ChessMove move = action.getMove();
       Game game = Server.dataAccess.getGame(gameID);
+
+      if (game.gameOver() == 1){
+        notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Game is Over");
+        session.getRemote().sendString(new Gson().toJson(notification));
+        return;
+      }
+
       ChessGame chessGame = game.game();
       Collection<ChessMove> moves = chessGame.validMoves(move.getStartPosition());
 
@@ -138,13 +140,15 @@ public class WebSocketHandler {
       if (chessGame.isInCheckmate(ChessGame.TeamColor.WHITE)){
         notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, move + "White is in Checkmate!");
         connections.broadcast(user, gameID, notification);
-        gameOver = Boolean.TRUE;
+        game = game.updateGameOver();
+        Server.dataAccess.updateGame(gameID, game);
         return;
       }
       else if (chessGame.isInCheckmate(ChessGame.TeamColor.BLACK)){
         notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, move + "Black is in Checkmate!");
         connections.broadcast(user, gameID, notification);
-        gameOver = Boolean.TRUE;
+        game = game.updateGameOver();
+        Server.dataAccess.updateGame(gameID, game);
         return;
       }
       else if (chessGame.isInCheck(ChessGame.TeamColor.BLACK)){
@@ -160,13 +164,15 @@ public class WebSocketHandler {
       else if (chessGame.isInStalemate(ChessGame.TeamColor.WHITE)){
         notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, move + "Stalemate!");
         connections.broadcast(user, gameID, notification);
-        gameOver = Boolean.TRUE;
+        game = game.updateGameOver();
+        Server.dataAccess.updateGame(gameID, game);
         return;
       }
       else if (chessGame.isInStalemate(ChessGame.TeamColor.BLACK)){
         notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, move + "Stalemate!");
         connections.broadcast(user, gameID, notification);
-        gameOver = Boolean.TRUE;
+        game = game.updateGameOver();
+        Server.dataAccess.updateGame(gameID, game);
         return;
       }
 
@@ -197,18 +203,16 @@ public class WebSocketHandler {
 
     private void resign(UserGameCommand action) throws IOException, DataAccessException {
       ServerMessage notification;
-      if (gameOver == Boolean.TRUE){
+      Integer gameID = action.getGameID();
+      Authtoken token = Server.dataAccess.getAuth(action.getAuthToken());
+      String user = token.username();
+      Game game = Server.dataAccess.getGame(gameID);
+
+      if (game.gameOver() == 1){
         notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Cannot resign. The Game is already over");
         session.getRemote().sendString(new Gson().toJson(notification));
         return;
       }
-
-
-      Integer gameID = action.getGameID();
-      Authtoken token = Server.dataAccess.getAuth(action.getAuthToken());
-      String user = token.username();
-
-      Game game = Server.dataAccess.getGame(gameID);
 
       if (!Objects.equals(game.whiteUsername(), user) && !Objects.equals(game.blackUsername(), user)){
         notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Cannot resign. You are an observer");
@@ -222,13 +226,11 @@ public class WebSocketHandler {
       else if (Objects.equals(game.whiteUsername(), user)){
         game = game.updateWhiteUsername(null);
       }
-
+      game = game.updateGameOver();
       Server.dataAccess.updateGame(gameID, game);
 
       notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, user + "has resigned the game");
       connections.broadcast(null, gameID, notification);
-
-      gameOver = Boolean.TRUE;
       connections.remove(user);
     }
 }

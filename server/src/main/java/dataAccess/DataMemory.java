@@ -48,7 +48,7 @@ public class DataMemory implements DataAccess {
 
     //    Game methods
     public CreateResult addGame(String gameName) throws DataAccessException {
-        games.put(nextId, new Game(nextId, null, null, gameName, new ChessGame()));
+        games.put(nextId, new Game(nextId, null, null, gameName, new ChessGame(), 0));
         nextId++;
         return new CreateResult((nextId - 1));
     }
@@ -71,10 +71,10 @@ public class DataMemory implements DataAccess {
         Game newGame;
 
         if (color == ChessGame.TeamColor.WHITE){
-            newGame = new Game(game.gameID(), username, game.blackUsername(), game.gameName(), game.game());
+            newGame = new Game(game.gameID(), username, game.blackUsername(), game.gameName(), game.game(), 0);
         }
         else {
-            newGame = new Game(game.gameID(), game.whiteUsername(), username, game.gameName(), game.game());
+            newGame = new Game(game.gameID(), game.whiteUsername(), username, game.gameName(), game.game(), 0);
         }
         deleteGame(game.gameID());
         games.put(newGame.gameID(), newGame);
