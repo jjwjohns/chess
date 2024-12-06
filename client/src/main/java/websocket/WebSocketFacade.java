@@ -2,21 +2,26 @@ package websocket;
 
 import chess.ChessGame;
 import chess.ChessMove;
+import chess.ChessPosition;
 import com.google.gson.Gson;
 import ui.DrawBoard;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
+import java.util.Collection;
 
 import javax.websocket.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.List;
+import java.util.Objects;
 
 import static ui.EscapeSequences.*;
 
 //need to extend Endpoint for websocket to work properly
 public class WebSocketFacade extends Endpoint {
     ChessGame game;
+    String color;
     Session session;
 
     public WebSocketFacade(String url) throws Exception {
@@ -47,7 +52,12 @@ public class WebSocketFacade extends Endpoint {
             System.out.println(SET_TEXT_COLOR_GREEN + new Gson().toJson(chessGame));
 //            if (notification.toString().contains("White"))
             System.out.print("\n" + RESET_TEXT_COLOR);
-            DrawBoard.drawWhite();
+            if (Objects.equals(color, "white") || Objects.equals(color, "none")) {
+                DrawBoard.drawWhite();
+            }
+            else {
+                DrawBoard.drawBlack();
+            }
             System.out.print("\n" + RESET_TEXT_COLOR);
         }
         else if (notification.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION){
@@ -65,13 +75,14 @@ public class WebSocketFacade extends Endpoint {
     public void onOpen(Session session, EndpointConfig endpointConfig) {
     }
 
-    public void join(String auth, int id) throws Exception {
+    public void join(String auth, int id, String color) throws Exception {
         try {
             var action = new UserGameCommand(UserGameCommand.CommandType.CONNECT, auth, id);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException ex) {
             throw new Exception(ex.getMessage());
         }
+        this.color = color;
     }
 
     public void leave(String auth, Integer gameNumber) throws Exception {
@@ -103,7 +114,31 @@ public class WebSocketFacade extends Endpoint {
 
     public void redraw() {
         System.out.println(new Gson().toJson(game));
-        DrawBoard.drawWhite();
+        if (Objects.equals(color, "white") || Objects.equals(color, "none")) {
+            DrawBoard.drawWhite();
+        }
+        else {
+            DrawBoard.drawBlack();
+        }
+    }
+
+    public void highlight(ChessPosition pos) {
+        if (game.getBoard().getPiece(pos) == null){
+            System.out.println("must choose a position with a piece");
+        }
+        Collection<ChessMove> validMoves = game.validMoves(pos);
+        Collection<ChessPosition> validPositions= new java.util.ArrayList<>(List.of());
+        for (ChessMove move : validMoves){
+            validPositions.add(move.getEndPosition());
+        }
+        if (Objects.equals(color, "white") || Objects.equals(color, "none")) {
+            DrawBoard.drawWhite();
+            System.out.println(validPositions);
+        }
+        else {
+            DrawBoard.drawBlack();
+            System.out.println(validPositions);
+        }
     }
 }
 

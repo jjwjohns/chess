@@ -12,8 +12,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
 
-import static chess.ChessPiece.PieceType.*;
-
 public class ChessClient {
     private final ServerFacade server;
     private final String serverUrl;
@@ -50,7 +48,7 @@ public class ChessClient {
                     case "leave" -> leave();
                     case "move" -> move(params);
                     case "resign" -> resign();
-                    case "highlight" -> highlight();
+                    case "highlight" -> highlight(params);
                     default -> help();
                 };
             }
@@ -70,8 +68,14 @@ public class ChessClient {
         }
     }
 
-    private String highlight() {
-      return "Have not implemented highlight";
+    private String highlight(String... params) {
+      if (params.length < 1){
+        return "need the location";
+      }
+      ChessPosition pos = determinePosition(params[0]);
+
+      ws.highlight(pos);
+      return "";
     }
 
     private String resign() throws Exception {
@@ -93,7 +97,7 @@ public class ChessClient {
       }
     }
 
-    private static ChessPosition DeterminePosition(String pos){
+    private static ChessPosition determinePosition(String pos){
       char colChar = pos.charAt(0);
       char rowChar = pos.charAt(1);
 
@@ -107,8 +111,8 @@ public class ChessClient {
       ChessMove move;
 
       try{
-        ChessPosition startPosition = DeterminePosition(params[0]);
-        ChessPosition endPosition = DeterminePosition(params[1]);
+        ChessPosition startPosition = determinePosition(params[0]);
+        ChessPosition endPosition = determinePosition(params[1]);
         ChessPiece.PieceType promotionPiece = null;
         if (params.length >= 3) {
           promotionPiece = ChessPiece.PieceType.valueOf(params[2].toUpperCase());
@@ -227,7 +231,7 @@ public class ChessClient {
 //                DrawBoard.drawWhite();
                 state = State.JOINED;
                 this.ws = new WebSocketFacade(serverUrl);
-                ws.join(auth.authToken(), id);
+                ws.join(auth.authToken(), id, "white");
                 gameNumber = id;
                 return "\nJoined game successfully";
             }
@@ -235,7 +239,7 @@ public class ChessClient {
             state = State.JOINED;
 
             this.ws = new WebSocketFacade(serverUrl);
-            ws.join(auth.authToken(), id);
+            ws.join(auth.authToken(), id, "black");
             gameNumber = id;
             return "\nJoined game successfully";
         }
@@ -252,7 +256,7 @@ public class ChessClient {
                     state = State.JOINED;
 
                     this.ws = new WebSocketFacade(serverUrl);
-                    ws.join(auth.authToken(), id);
+                    ws.join(auth.authToken(), id, "none");
                     gameNumber = id;
 
                     return "\n" + server.observe(id);
@@ -280,7 +284,7 @@ public class ChessClient {
                     - leave - leaves the game without resigning
                     - move <PIECE LOCATION> <MOVE LOCATION> <PROMOTION PIECE> (if applicable) - moves a piece (example: move b2 b4)
                     - resign - forfeits the game
-                    - highlight <PIECE> <LOCATION> - highlights the possible moves of a piece (example: highlight P b2)
+                    - highlight <LOCATION> - highlights the possible moves of a piece (example: highlight b2)
                     - help - displays possible commands
                     """;
         }
