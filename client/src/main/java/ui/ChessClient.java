@@ -1,6 +1,9 @@
 package ui;
 
 import chess.ChessGame;
+import chess.ChessMove;
+import chess.ChessPiece;
+import chess.ChessPosition;
 import model.*;
 import websocket.WebSocketFacade;
 
@@ -8,6 +11,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Scanner;
+
+import static chess.ChessPiece.PieceType.*;
 
 public class ChessClient {
     private final ServerFacade server;
@@ -43,7 +48,7 @@ public class ChessClient {
                 return switch (cmd) {
                     case "redraw" -> redraw();
                     case "leave" -> leave();
-                    case "move" -> move();
+                    case "move" -> move(params);
                     case "resign" -> resign();
                     case "highlight" -> highlight();
                     default -> help();
@@ -88,8 +93,37 @@ public class ChessClient {
       }
     }
 
-    private String move() {
-      return "Have not implemented move";
+    private static ChessPosition DeterminePosition(String pos){
+      char colChar = pos.charAt(0);
+      char rowChar = pos.charAt(1);
+
+      int column = colChar - 'a' + 1;
+      int row = Character.getNumericValue(rowChar);
+
+      return new ChessPosition(row, column);
+    }
+
+    private String move(String... params) throws Exception {
+      ChessMove move;
+
+      try{
+        ChessPosition startPosition = DeterminePosition(params[0]);
+        ChessPosition endPosition = DeterminePosition(params[1]);
+        ChessPiece.PieceType promotionPiece = null;
+        if (params.length >= 3) {
+          promotionPiece = ChessPiece.PieceType.valueOf(params[2].toUpperCase());
+        }
+        if (startPosition.getRow() > 8 || startPosition.getRow() < 1 || startPosition.getColumn() > 8 || startPosition.getColumn() < 1 || endPosition.getRow() > 8 || endPosition.getRow() < 1 || endPosition.getColumn() > 8 || endPosition.getColumn() < 1) {
+          return "invalid position";
+        }
+
+        move = new ChessMove(startPosition, endPosition, promotionPiece);
+      } catch (Exception e) {
+        return "invalid move";
+      }
+
+      ws.move(auth.authToken(), gameNumber, move);
+      return "";
     }
 
     private String leave() throws Exception {
@@ -243,7 +277,7 @@ public class ChessClient {
             return """
                     - redraw - redraws the chess board to be more easily viewable
                     - leave - leaves the game without resigning
-                    - move <PIECE> <LOCATION> <MOVE LOCATION> - moves a piece (example: move P b2 b4)
+                    - move <PIECE LOCATION> <MOVE LOCATION> <PROMOTION PIECE> (if applicable) - moves a piece (example: move b2 b4)
                     - resign - forfeits the game
                     - highlight <PIECE> <LOCATION> - highlights the possible moves of a piece (example: highlight P b2)
                     - help - displays possible commands

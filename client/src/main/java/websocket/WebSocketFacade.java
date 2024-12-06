@@ -1,5 +1,6 @@
 package websocket;
 
+import chess.ChessMove;
 import com.google.gson.Gson;
 import ui.DrawBoard;
 import websocket.commands.UserGameCommand;
@@ -40,8 +41,9 @@ public class WebSocketFacade extends Endpoint {
 
     private void handleMessage(ServerMessage notification) {
         if (notification.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
-            System.out.println(SET_TEXT_COLOR_GREEN + notification.getGame());
+            System.out.println(SET_TEXT_COLOR_GREEN + new Gson().toJson(notification.getGame()));
 //            if (notification.toString().contains("White"))
+            System.out.print("\n" + RESET_TEXT_COLOR);
             DrawBoard.drawWhite();
             System.out.print("\n" + RESET_TEXT_COLOR);
         }
@@ -81,6 +83,15 @@ public class WebSocketFacade extends Endpoint {
     public void resign(String auth, Integer gameNumber) throws Exception {
         try {
             var action = new UserGameCommand(UserGameCommand.CommandType.RESIGN, auth, gameNumber);
+            this.session.getBasicRemote().sendText(new Gson().toJson(action));
+        } catch (IOException ex) {
+            throw new Exception(ex.getMessage());
+        }
+    }
+
+    public void move(String auth, Integer gameNumber, ChessMove move) throws Exception {
+        try {
+            var action = new UserGameCommand(UserGameCommand.CommandType.MAKE_MOVE, auth, gameNumber, move);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException ex) {
             throw new Exception(ex.getMessage());

@@ -102,9 +102,10 @@ public class WebSocketHandler {
       }
 
       ChessGame chessGame = game.game();
+
       Collection<ChessMove> moves = chessGame.validMoves(move.getStartPosition());
 
-      if (!moves.contains(move)){
+      if (moves == null || !moves.contains(move)){
         notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: Move is invalid");
         session.getRemote().sendString(new Gson().toJson(notification));
         return;
@@ -143,8 +144,7 @@ public class WebSocketHandler {
       notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, chessGame);
       connections.broadcast(null, gameID, notification);
 
-      ChessPiece.PieceType pieceType = chessGame.getBoard().getPiece(move.getStartPosition()).getPieceType();
-      String message = user + " moved " + pieceType + " from " + move.getStartPosition().toString() + " to " + move.getEndPosition();
+      String message = user + " moved from " + move.getStartPosition() + " to " + move.getEndPosition();
 
       notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
       connections.broadcast(user, gameID, notification);
