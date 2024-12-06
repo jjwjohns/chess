@@ -17,7 +17,6 @@ public class WebSocketFacade extends Endpoint {
     Session session;
 
     public WebSocketFacade(String url) throws Exception {
-        System.out.println("WebSocketFacade (client)");
         try {
             url = url.replace("http", "ws");
             URI socketURI = new URI(url + "/ws");
@@ -56,13 +55,20 @@ public class WebSocketFacade extends Endpoint {
     //Endpoint requires this method, but you don't have to do anything
     @Override
     public void onOpen(Session session, EndpointConfig endpointConfig) {
-        System.out.println("onOpen (client)");
     }
 
     public void join(String auth, int id) throws Exception {
-        System.out.println("join (client)");
         try {
             var action = new UserGameCommand(UserGameCommand.CommandType.CONNECT, auth, id);
+            this.session.getBasicRemote().sendText(new Gson().toJson(action));
+        } catch (IOException ex) {
+            throw new Exception(ex.getMessage());
+        }
+    }
+
+    public void leave(String auth, Integer gameNumber) throws Exception {
+        try {
+            var action = new UserGameCommand(UserGameCommand.CommandType.LEAVE, auth, gameNumber);
             this.session.getBasicRemote().sendText(new Gson().toJson(action));
         } catch (IOException ex) {
             throw new Exception(ex.getMessage());

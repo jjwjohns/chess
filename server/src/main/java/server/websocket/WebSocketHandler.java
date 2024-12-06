@@ -44,26 +44,37 @@ public class WebSocketHandler {
       Integer gameID = action.getGameID();
       Authtoken token = Server.dataAccess.getAuth(auth);
       if (token == null){
-        ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Authtoken is invalid");
+        ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: Authtoken is invalid");
         session.getRemote().sendString(new Gson().toJson(notification));
         return;
       }
       String user = token.username();
 
       connections.add(user, gameID, this.session);
-      ChessGame game;
+      Game game;
+      ChessGame chessGame;
       try {
-        game = Server.dataAccess.getGame(gameID).game();
+        game = Server.dataAccess.getGame(gameID);
+        chessGame = game.game();
       } catch (Exception e){
-        ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Game ID is invalid");
+        ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: Game ID is invalid");
         session.getRemote().sendString(new Gson().toJson(notification));
         return;
       }
 
-      var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, game);
+      var notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, chessGame);
       session.getRemote().sendString(new Gson().toJson(notification));
 
-      String message = "player " + user + " has joined game " + gameID;
+      String message;
+      if (Objects.equals(game.blackUsername(), user)){
+        message = "player " + user + " has joined game " + gameID + " as black";
+      }
+      else if (Objects.equals(game.whiteUsername(), user)){
+        message = "player " + user + " has joined game " + gameID + " as white";
+      }
+      else {
+        message = "player " + user + " has joined game " + gameID + " as an observer";
+      }
 
       notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
       connections.broadcast(user, gameID, notification);
@@ -74,7 +85,7 @@ public class WebSocketHandler {
       String auth = action.getAuthToken();
       Authtoken token = Server.dataAccess.getAuth(auth);
       if (token == null){
-        notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Invalid AuthToken");
+        notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: Invalid AuthToken");
         session.getRemote().sendString(new Gson().toJson(notification));
         return;
       }
@@ -85,7 +96,7 @@ public class WebSocketHandler {
       Game game = Server.dataAccess.getGame(gameID);
 
       if (game.gameOver() == 1){
-        notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Game is Over");
+        notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: Game is Over");
         session.getRemote().sendString(new Gson().toJson(notification));
         return;
       }
@@ -94,7 +105,7 @@ public class WebSocketHandler {
       Collection<ChessMove> moves = chessGame.validMoves(move.getStartPosition());
 
       if (!moves.contains(move)){
-        notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Move is invalid");
+        notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: Move is invalid");
         session.getRemote().sendString(new Gson().toJson(notification));
         return;
       }
@@ -103,27 +114,27 @@ public class WebSocketHandler {
       String blackUser = game.blackUsername();
       ChessGame.TeamColor turn = chessGame.getTeamTurn();
       if (turn == ChessGame.TeamColor.WHITE && !Objects.equals(whiteUser, user)){
-        notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Please wait for your turn");
+        notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: Please wait for your turn");
         session.getRemote().sendString(new Gson().toJson(notification));
         return;
       }
       else if (turn == ChessGame.TeamColor.BLACK && !Objects.equals(blackUser, user)){
-        notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Please wait for your turn");
+        notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: Please wait for your turn");
         session.getRemote().sendString(new Gson().toJson(notification));
         return;
       }
       else if (chessGame.getBoard().getPiece(move.getStartPosition()).getTeamColor() != turn) {
-        notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "You can only move your pieces!");
+        notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: You can only move your pieces!");
         session.getRemote().sendString(new Gson().toJson(notification));
         return;
       }
       else if (chessGame.isInStalemate(ChessGame.TeamColor.WHITE) || chessGame.isInStalemate(ChessGame.TeamColor.BLACK)){
-        notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "The Game is already over! Stalemate");
+        notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: The Game is already over! Stalemate");
         session.getRemote().sendString(new Gson().toJson(notification));
         return;
       }
       else if (chessGame.isInCheckmate(ChessGame.TeamColor.WHITE) || chessGame.isInCheckmate(ChessGame.TeamColor.BLACK)){
-        notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "The Game is already over! Checkmate");
+        notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: The Game is already over! Checkmate");
         session.getRemote().sendString(new Gson().toJson(notification));
         return;
       }
@@ -182,7 +193,7 @@ public class WebSocketHandler {
 
       Server.dataAccess.updateGame(gameID, game);
 
-      ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, user + "has left the game");
+      ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, "Player " + user + " has left the game");
       connections.broadcast(user, gameID, notification);
 
       connections.remove(user);
@@ -196,13 +207,13 @@ public class WebSocketHandler {
       Game game = Server.dataAccess.getGame(gameID);
 
       if (game.gameOver() == 1){
-        notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Cannot resign. The Game is already over");
+        notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: Cannot resign. The Game is already over");
         session.getRemote().sendString(new Gson().toJson(notification));
         return;
       }
 
       if (!Objects.equals(game.whiteUsername(), user) && !Objects.equals(game.blackUsername(), user)){
-        notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Cannot resign. You are an observer");
+        notification = new ServerMessage(ServerMessage.ServerMessageType.ERROR, "Error: Cannot resign. You are an observer");
         session.getRemote().sendString(new Gson().toJson(notification));
         return;
       }
