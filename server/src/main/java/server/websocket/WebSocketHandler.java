@@ -143,39 +143,38 @@ public class WebSocketHandler {
       notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, chessGame);
       connections.broadcast(null, gameID, notification);
 
+      ChessPiece.PieceType pieceType = chessGame.getBoard().getPiece(move.getStartPosition()).getPieceType();
+      String message = user + " moved " + pieceType + " from " + move.getStartPosition().toString() + " to " + move.getEndPosition();
+
+      notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, message);
+      connections.broadcast(user, gameID, notification);
+
       if (chessGame.isInCheckmate(ChessGame.TeamColor.WHITE)){
-        notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, move + " " + game.whiteUsername() + " is in Checkmate!");
+        notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, game.whiteUsername() + " is in Checkmate!");
         connections.broadcast(user, gameID, notification);
         game = game.updateGameOver();
         Server.dataAccess.updateGame(gameID, game);
-        return;
       }
       else if (chessGame.isInCheckmate(ChessGame.TeamColor.BLACK)){
-        notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, move + " " + game.blackUsername() + " is in Checkmate!");
+        notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, game.blackUsername() + " is in Checkmate!");
         connections.broadcast(user, gameID, notification);
         game = game.updateGameOver();
         Server.dataAccess.updateGame(gameID, game);
-        return;
       }
       else if (chessGame.isInCheck(ChessGame.TeamColor.BLACK)){
-        notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, move + " " + game.blackUsername() + " is in Check!");
+        notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, game.blackUsername() + " is in Check!");
         connections.broadcast(user, gameID, notification);
-        return;
       }
       else if (chessGame.isInCheck(ChessGame.TeamColor.WHITE)){
-        notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, move + " " + game.whiteUsername() + " is in Check!");
+        notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, game.whiteUsername() + " is in Check!");
         connections.broadcast(user, gameID, notification);
-        return;
       }
       else if (chessGame.isInStalemate(ChessGame.TeamColor.WHITE) || chessGame.isInStalemate(ChessGame.TeamColor.BLACK)){
-        notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, move + "Stalemate!");
+        notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, "Stalemate!");
         connections.broadcast(user, gameID, notification);
         game = game.updateGameOver();
         Server.dataAccess.updateGame(gameID, game);
-        return;
       }
-      notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, move.toString());
-      connections.broadcast(user, gameID, notification);
     }
 
     private void leave(UserGameCommand action) throws DataAccessException, IOException {

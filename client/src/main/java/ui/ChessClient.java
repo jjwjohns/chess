@@ -189,14 +189,14 @@ public class ChessClient {
             int id = list.get(index).gameID();
 
             if (color == ChessGame.TeamColor.WHITE){
-                DrawBoard.drawWhite();
+//                DrawBoard.drawWhite();
                 state = State.JOINED;
                 this.ws = new WebSocketFacade(serverUrl);
                 ws.join(auth.authToken(), id);
                 gameNumber = id;
                 return "\nJoined game successfully";
             }
-            DrawBoard.drawBlack();
+//            DrawBoard.drawBlack();
             state = State.JOINED;
 
             this.ws = new WebSocketFacade(serverUrl);
@@ -213,7 +213,7 @@ public class ChessClient {
                 int index = Integer.parseInt(params[0]) - 1;
                 if (index <= list.size()) {
                     int id = list.get(index).gameID();
-                    DrawBoard.drawWhite();
+//                    DrawBoard.drawWhite();
                     state = State.JOINED;
 
                     this.ws = new WebSocketFacade(serverUrl);

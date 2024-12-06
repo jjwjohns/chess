@@ -1,6 +1,7 @@
 package websocket;
 
 import com.google.gson.Gson;
+import ui.DrawBoard;
 import websocket.commands.UserGameCommand;
 import websocket.messages.ServerMessage;
 
@@ -40,6 +41,8 @@ public class WebSocketFacade extends Endpoint {
     private void handleMessage(ServerMessage notification) {
         if (notification.getServerMessageType() == ServerMessage.ServerMessageType.LOAD_GAME){
             System.out.println(SET_TEXT_COLOR_GREEN + notification.getGame());
+//            if (notification.toString().contains("White"))
+            DrawBoard.drawWhite();
             System.out.print("\n" + RESET_TEXT_COLOR);
         }
         else if (notification.getServerMessageType() == ServerMessage.ServerMessageType.NOTIFICATION){
