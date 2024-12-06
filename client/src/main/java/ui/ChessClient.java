@@ -103,9 +103,9 @@ public class ChessClient {
       char rowChar = pos.charAt(1);
 
       int column = colChar - 'a' + 1;
-      if (Objects.equals(this.color, "black")){
-        column = 9 - column;
-      }
+//      if (Objects.equals(this.color, "black")){
+//        column = 9 - column;
+//      }
       int row = Character.getNumericValue(rowChar);
 
       return new ChessPosition(row, column);

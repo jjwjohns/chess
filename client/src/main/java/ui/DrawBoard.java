@@ -91,16 +91,11 @@ public class DrawBoard {
     private static void drawRow(PrintStream out, ChessBoard board, Collection<ChessPosition> positions, Integer row, Integer flipped) {
         String dark;
         String light;
-        if (flipped == 0) {
-            dark=SET_BG_COLOR_DARK_GREEN;
-            light=SET_BG_COLOR_LIGHT_GREY;
-        } else {
-            light=SET_BG_COLOR_DARK_GREEN;
-            dark=SET_BG_COLOR_LIGHT_GREY;
-        }
 
+        for (int boardCol = (flipped == 1 ? BOARD_SIZE_IN_SQUARES - 1 : 0);
+             flipped == 1 ? boardCol >= 0 : boardCol < BOARD_SIZE_IN_SQUARES;
+             boardCol += (flipped == 1 ? -1 : 1)) {
 
-        for (int boardCol=0; boardCol < BOARD_SIZE_IN_SQUARES; ++boardCol) {
             if (boardCol == 0 || boardCol == 9) {
                 out.print(SET_BG_COLOR_BLACK + SET_TEXT_BOLD + " " + row + " ");
             } else {
@@ -108,8 +103,8 @@ public class DrawBoard {
                 String printable=getType(board, pos);
 
                 if (positions != null && positions.contains(pos)){
-                    dark=SET_BG_COLOR_YELLOW;
-                    light=SET_BG_COLOR_YELLOW;
+                    dark=SET_BG_COLOR_GREEN;
+                    light=SET_BG_COLOR_GREEN;
                 }
                 else {
                     if (flipped == 0){
@@ -117,8 +112,8 @@ public class DrawBoard {
                         light=SET_BG_COLOR_LIGHT_GREY;
                     }
                     else {
-                        light=SET_BG_COLOR_DARK_GREEN;
-                        dark=SET_BG_COLOR_LIGHT_GREY;
+                        light=SET_BG_COLOR_LIGHT_GREY;
+                        dark=SET_BG_COLOR_DARK_GREEN;
                     }
                 }
 
