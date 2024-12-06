@@ -21,6 +21,7 @@ public class ChessClient {
     private Authtoken auth;
     private List<Game> list;
     private Integer gameNumber;
+    private String color;
 
 
   public ChessClient(String serverUrl, Repl repl) {
@@ -97,11 +98,14 @@ public class ChessClient {
       }
     }
 
-    private static ChessPosition determinePosition(String pos){
+    private ChessPosition determinePosition(String pos){
       char colChar = pos.charAt(0);
       char rowChar = pos.charAt(1);
 
       int column = colChar - 'a' + 1;
+      if (Objects.equals(this.color, "black")){
+        column = 9 - column;
+      }
       int row = Character.getNumericValue(rowChar);
 
       return new ChessPosition(row, column);
@@ -109,7 +113,6 @@ public class ChessClient {
 
     private String move(String... params) throws Exception {
       ChessMove move;
-
       try{
         ChessPosition startPosition = determinePosition(params[0]);
         ChessPosition endPosition = determinePosition(params[1]);
@@ -133,6 +136,7 @@ public class ChessClient {
     private String leave() throws Exception {
       ws.leave(auth.authToken(), gameNumber);
       state = State.LOGGEDIN;
+      this.color = null;
       return "You have left";
     }
 
@@ -231,6 +235,7 @@ public class ChessClient {
 //                DrawBoard.drawWhite();
                 state = State.JOINED;
                 this.ws = new WebSocketFacade(serverUrl);
+                this.color = "white";
                 ws.join(auth.authToken(), id, "white");
                 gameNumber = id;
                 return "\nJoined game successfully";
@@ -239,6 +244,7 @@ public class ChessClient {
             state = State.JOINED;
 
             this.ws = new WebSocketFacade(serverUrl);
+            this.color = "black";
             ws.join(auth.authToken(), id, "black");
             gameNumber = id;
             return "\nJoined game successfully";

@@ -127,6 +127,7 @@ public class WebSocketFacade extends Endpoint {
         for (ChessMove move : validMoves){
             validPositions.add(move.getEndPosition());
         }
+        validPositions.add(pos);
         if (Objects.equals(color, "white") || Objects.equals(color, "none")) {
             DrawBoard.drawWhite(game.getBoard(), validPositions);
         }

@@ -111,6 +111,16 @@ public class DrawBoard {
                     dark=SET_BG_COLOR_YELLOW;
                     light=SET_BG_COLOR_YELLOW;
                 }
+                else {
+                    if (flipped == 0){
+                        dark=SET_BG_COLOR_DARK_GREEN;
+                        light=SET_BG_COLOR_LIGHT_GREY;
+                    }
+                    else {
+                        light=SET_BG_COLOR_DARK_GREEN;
+                        dark=SET_BG_COLOR_LIGHT_GREY;
+                    }
+                }
 
                 String textColor="";
                 if (board.getPiece(pos) != null) {
