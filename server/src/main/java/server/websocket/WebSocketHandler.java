@@ -6,8 +6,6 @@ import dataaccess.DataAccessException;
 import model.Authtoken;
 import model.Game;
 import org.eclipse.jetty.websocket.api.Session;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketClose;
-import org.eclipse.jetty.websocket.api.annotations.OnWebSocketConnect;
 import org.eclipse.jetty.websocket.api.annotations.OnWebSocketMessage;
 import org.eclipse.jetty.websocket.api.annotations.WebSocket;
 import server.Server;
@@ -129,11 +127,8 @@ public class WebSocketHandler {
         session.getRemote().sendString(new Gson().toJson(notification));
         return;
       }
-
       chessGame.makeMove(move);
-
       Server.dataAccess.updateGame(gameID, game);
-
       notification = new ServerMessage(ServerMessage.ServerMessageType.LOAD_GAME, chessGame);
       connections.broadcast(null, gameID, notification);
 
@@ -161,21 +156,13 @@ public class WebSocketHandler {
         connections.broadcast(user, gameID, notification);
         return;
       }
-      else if (chessGame.isInStalemate(ChessGame.TeamColor.WHITE)){
+      else if (chessGame.isInStalemate(ChessGame.TeamColor.WHITE) || chessGame.isInStalemate(ChessGame.TeamColor.BLACK)){
         notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, move + "Stalemate!");
         connections.broadcast(user, gameID, notification);
         game = game.updateGameOver();
         Server.dataAccess.updateGame(gameID, game);
         return;
       }
-      else if (chessGame.isInStalemate(ChessGame.TeamColor.BLACK)){
-        notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, move + "Stalemate!");
-        connections.broadcast(user, gameID, notification);
-        game = game.updateGameOver();
-        Server.dataAccess.updateGame(gameID, game);
-        return;
-      }
-
       notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, move.toString());
       connections.broadcast(user, gameID, notification);
     }
