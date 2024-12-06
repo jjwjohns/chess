@@ -33,8 +33,8 @@ public class WebSocketHandler {
       switch (action.getCommandType()) {
           case CONNECT -> connect(action);
           case MAKE_MOVE -> makeMove(action);
-          case LEAVE -> leave();
-          case RESIGN -> resign();
+          case LEAVE -> leave(action);
+          case RESIGN -> resign(action);
       }
     }
 
@@ -171,12 +171,28 @@ public class WebSocketHandler {
       connections.broadcast(user, gameID, notification);
     }
 
-    private void leave(){
-      connections.remove("user");
-      System.out.println("leave not implemented");
+    private void leave(UserGameCommand action) throws DataAccessException, IOException {
+      Integer gameID = action.getGameID();
+      Authtoken token = Server.dataAccess.getAuth(action.getAuthToken());
+      String user = token.username();
+
+      connections.remove(user);
+
+      Game game = Server.dataAccess.getGame(gameID);
+      if (Objects.equals(game.blackUsername(), user)){
+        game = game.updateBlackUsername(null);
+      }
+      else if (Objects.equals(game.whiteUsername(), user)){
+        game = game.updateWhiteUsername(null);
+      }
+
+      Server.dataAccess.updateGame(gameID, game);
+
+      ServerMessage notification = new ServerMessage(ServerMessage.ServerMessageType.NOTIFICATION, user + "has left the game");
+      connections.broadcast(user, gameID, notification);
     }
 
-    private void resign(){
+    private void resign(UserGameCommand action){
       System.out.println("resign not implemented");
     }
 }
